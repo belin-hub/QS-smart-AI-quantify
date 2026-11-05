@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QS SMART AI — by quantify team</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          brand: { DEFAULT: '#004AAD', dark: '#003B8A', light: '#E8F0FB' }
+        },
+        fontFamily: {
+          sans: ['Inter', 'system-ui', 'sans-serif'],
+        }
+      }
+    }
+  };
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  summary::-webkit-details-marker { display: none; }
+  details[open] .chev { transform: rotate(90deg); }
+  html { scroll-behavior: smooth; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  .loader { border-top-color: #004AAD; -webkit-animation: spinner 1.5s linear infinite; animation: spinner 1.5s linear infinite; }
+  @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  mark { background-color: #fef08a; color: #854d0e; padding: 0 2px; border-radius: 2px; }
+</style>
+</head>
+<body class="bg-[#F8FAFC] min-h-screen antialiased text-slate-800 font-sans flex flex-col">
+
+<!-- ============ GLOBAL HEADER ============ -->
+<header class="bg-gradient-to-r from-[#004AAD] to-[#2563EB] text-white sticky top-0 z-40 shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
+    <button onclick="goHome()" class="flex items-center gap-3 text-left focus:outline-none shrink-0">
+      <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm grid place-items-center font-bold text-sm shadow-inner">QS</span>
+      <span class="leading-tight hidden sm:block">
+        <span class="block font-bold tracking-wide text-lg">QS SMART AI</span>
+        <span class="block text-[10px] text-blue-200 uppercase tracking-widest font-semibold">by quantify team</span>
+      </span>
+    </button>
+    
+    <!-- Global Search Box -->
+    <div id="searchContainer" class="hidden flex-1 max-w-md mx-auto relative">
+      <div class="relative">
+        <input id="globalSearch" type="text" placeholder="Search dates, amounts, clauses..." oninput="handleSearch(this.value)" class="w-full bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-2 pl-10 rounded-xl text-sm focus:outline-none focus:bg-white focus:text-slate-900 focus:placeholder-slate-400 transition-all">
+        <svg class="w-4 h-4 absolute left-3 top-2.5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+      </div>
+    </div>
+
+    <button onclick="openSettings()" class="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition backdrop-blur-sm border border-white/10 shrink-0" title="API Settings">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="hidden sm:inline font-medium">API Settings</span>
+    </button>
+  </div>
+</header>
+
+<main class="flex-1 w-full">
+  <!-- ============ VIEW: HOME ============ -->
+  <section id="view-home" class="max-w-7xl mx-auto px-4 py-8">
+    <div class="bg-gradient-to-br from-brand to-[#1E3A8A] rounded-2xl p-8 md:p-12 text-white mb-8 shadow-xl relative overflow-hidden">
+      <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+      <div class="relative z-10 md:w-2/3">
+        <h1 class="text-3xl md:text-4xl font-bold mb-3 tracking-tight">Streamline your Contract Analysis</h1>
+        <p class="text-blue-100 mb-6 text-sm md:text-base leading-relaxed max-w-xl">Upload your GCC, SCC, and VO documents. Our 60-year HK QS AI expert will extract key dates, clauses, and verify Security of Payment (Cap. 652) compliance.</p>
+        <button onclick="openNewProject()" class="bg-white text-brand font-bold px-6 py-3 rounded-xl hover:bg-blue-50 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">+ Create New Project</button>
+      </div>
+    </div>
+    <div class="flex items-center justify-between mb-4"><h2 class="text-xl font-bold text-slate-900">Project Overview</h2></div>
+    <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+  </section>
+
+  <!-- ============ VIEW: WORKSPACE ============ -->
+  <section id="view-workspace" class="hidden max-w-7xl mx-auto px-4 py-6">
+    <div class="flex items-center gap-4 mb-6 flex-wrap">
+      <button onclick="goHome()" class="flex items-center gap-2 text-sm text-slate-600 hover:text-brand bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm transition hover:bg-slate-50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>Projects
+      </button>
+      <div><h1 id="projTitle" class="text-2xl font-bold text-slate-900"></h1><span id="projMeta" class="text-xs font-medium text-slate-500"></span></div>
+    </div>
+    <div id="tabBar" class="flex gap-1 overflow-x-auto pb-2 mb-6 border-b border-slate-200 scrollbar-hide"></div>
+    <div id="panelHost" class="min-h-[500px]"></div>
+  </section>
+</main>
+
+<!-- ============ MODALS ============ -->
+<div id="modalSettings" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform transition-all">
+    <div class="flex items-start justify-between mb-1"><h2 class="text-xl font-bold text-slate-900">API Settings</h2><button onclick="closeSettings()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none -mt-1 focus:outline-none">×</button></div>
+    <p class="text-xs text-slate-500 mb-5">Connect to any OpenAI-compatible endpoint (DeepSeek, Moyu, OpenAI). Data is stored locally in your browser.</p>
+    <div class="space-y-4">
+      <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Endpoint URL</label><input id="setEndpoint" type="text" placeholder="https://api.deepseek.com/v1" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
+      <div><label class="block text-xs font-bold text-slate-700 mb-1.5">API Key</label><input id="setApiKey" type="password" placeholder="sk-..." class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
+      <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Model Name</label><input id="setModel" type="text" placeholder="deepseek-chat" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
+    </div>
+    <div id="testResult" class="text-xs mt-3 min-h-[1.25rem] font-medium"></div>
+    <div class="flex items-center gap-3 mt-6">
+      <button onclick="testConnection()" class="text-sm font-semibold px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 transition">Test Connection</button>
+      <div class="ml-auto flex gap-2"><button onclick="closeSettings()" class="text-sm font-medium px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition">Cancel</button><button onclick="saveSettings()" class="text-sm font-bold px-6 py-2.5 rounded-xl bg-brand text-white hover:bg-brand-dark shadow-md transition">Save</button></div>
+    </div>
+    <div class="border-t border-slate-100 mt-6 pt-4 text-center"><button onclick="if(confirm('Erase all projects and settings?')) { localStorage.clear(); location.reload(); }" class="text-[11px] text-rose-500 hover:underline">Reset App Data</button></div>
+  </div>
+</div>
+
+<div id="modalNewProject" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-sm rounded-2xl shadow-2xl p-6 transform transition-all">
+    <h2 class="text-xl font-bold text-slate-900 mb-1">New Project</h2><p class="text-xs text-slate-500 mb-4">e.g. “Contract 1234 – Hospital Extension”.</p>
+    <input id="newProjName" type="text" placeholder="Project name" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition">
+    <div class="flex justify-end gap-2"><button onclick="closeNewProject()" class="text-sm font-medium px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition">Cancel</button><button onclick="confirmNewProject()" class="text-sm font-bold px-6 py-2.5 rounded-xl bg-brand text-white hover:bg-brand-dark shadow-md transition">Create</button></div>
+  </div>
+</div>
+
+<div id="modalManualText" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-2xl rounded-2xl shadow-2xl p-6 transform transition-all flex flex-col max-h-[90vh]">
+    <div class="flex items-start justify-between mb-2"><h2 class="text-xl font-bold text-slate-900">Paste Text Manually</h2><button onclick="closeManualText()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none focus:outline-none">×</button></div>
+    <p class="text-xs text-slate-500 mb-4">If OCR fails, open your PDF, select all text (Ctrl+A / Cmd+A), copy it, and paste it here.</p>
+    <textarea id="manualTextArea" class="w-full flex-1 min-h-[200px] p-4 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition resize-none font-mono" placeholder="Paste contract text here..."></textarea>
+    <div class="flex justify-end gap-2 mt-4"><button onclick="closeManualText()" class="text-sm font-medium px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition">Cancel</button><button onclick="saveManualText()" class="text-sm font-bold px-6 py-2.5 rounded-xl bg-brand text-white hover:bg-brand-dark shadow-md transition">Save Text</button></div>
+  </div>
+</div>
+
+<div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] text-white text-sm font-medium px-6 py-3 rounded-xl shadow-2xl max-w-[90vw] transition-all duration-300 transform translate-y-4 opacity-0"></div>
+
+<script>
+window.onerror = function(msg, url, lineNo, columnNo, error) {
+  console.error(error);
+  const errDiv = document.createElement('div');
+  errDiv.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#ef4444;color:white;padding:15px;z-index:9999;font-family:monospace;font-size:12px;';
+  errDiv.innerHTML = `<strong>JS Error:</strong> ${msg} at line ${lineNo}. <button onclick="this.parentNode.remove()" style="margin-left:20px;background:white;color:#ef4444;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;">Dismiss</button>`;
+  document.body.appendChild(errDiv);
+  return false;
+};
+
+const LS_PROJECTS = 'qssmart_projects_v1';
+const LS_SETTINGS = 'qssmart_settings_v1';
+
+const state = {
+  projects: [],
+  settings: { endpoint: '', apiKey: '', model: 'deepseek-chat' },
+  currentId: null,
+  tab: 'overview',
+  sopPeriod: 30,
+  busy: false,
+  batchInfo: '',
+  targetFileIdForManualText: null,
+  fileSort: 'date_desc',
+  searchQuery: ''
+};
+
+const TABS = [
+  { key: 'overview',  label: '1. Project Overview' },
+  { key: 'doc',       label: '2. Documents & OCR' },
+  { key: 'dates',     label: '3. Key Dates & Clauses' },
+  { key: 'timer',     label: '4. VO & SOP Timer' },
+  { key: 'organizer', label: '5. VO Organizer' },
+  { key: 'check',     label: '6. GCC/SCC & Calculator' }
+];
+
+const TYPE_COLORS = {
+  GCC: 'bg-blue-100 text-blue-700 border border-blue-200',
+  SCC: 'bg-indigo-100 text-indigo-700 border border-indigo-200',
+  VO:  'bg-amber-100 text-amber-700 border border-amber-200',
+  AI:  'bg-purple-100 text-purple-700 border border-purple-200',
+  Other: 'bg-slate-100 text-slate-600 border border-slate-200'
+};
+
+const $  = (s, r = document) => r.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+}
+
+// Helper to highlight search terms
+function hl(str) {
+  const safeStr = esc(str || '');
+  if (!state.searchQuery) return safeStr;
+  const regex = new RegExp(`(${state.searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+  return safeStr.replace(regex, '<mark>$1</mark>');
+}
+
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  if (isNaN(d)) return esc(String(s));
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+function parseDate(s) { if (!s) return null; const d = new Date(s); return isNaN(d) ? null : d; }
+function utcToday() { const n = new Date(); return Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()); }
+function fmtBytes(n) {
+  if (!n && n !== 0) return '';
+  if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(1) + ' KB'; return (n / 1048576).toFixed(1) + ' MB';
+}
+function badge(label, cls) {
+  const map = { emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200', rose: 'bg-rose-100 text-rose-700 border-rose-200', amber: 'bg-amber-100 text-amber-700 border-amber-200', slate: 'bg-slate-100 text-slate-600 border-slate-200' };
+  return `<span class="inline-flex items-center justify-center text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${map[cls] || map.slate}">${esc(label)}</span>`;
+}
+function emptyState(iconSvg, title, sub, actionHtml = '') {
+  return `<div class="flex flex-col items-center justify-center py-12 px-4 text-center">
+    <div class="w-16 h-16 mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">${iconSvg}</div>
+    <h3 class="text-lg font-bold text-slate-800">${esc(title)}</h3>
+    <p class="text-sm text-slate-500 mt-2 max-w-sm mx-auto">${esc(sub)}</p>
+    ${actionHtml ? `<div class="mt-6">${actionHtml}</div>` : ''}
+  </div>`;
+}
+
+let toastTimer;
+function toast(msg, type = 'info') {
+  const el = $('#toast');
+  const colors = { ok: 'bg-emerald-600', warn: 'bg-amber-500', error: 'bg-rose-600', info: 'bg-slate-800' };
+  el.className = `fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] text-white text-sm font-medium px-6 py-3 rounded-xl shadow-xl max-w-[90vw] transition-all duration-300 transform translate-y-0 opacity-100 ${colors[type] || colors.info}`;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.classList.add('translate-y-4', 'opacity-0'); setTimeout(() => el.classList.add('hidden'), 300); }, 4000);
+}
+
+function loadState() {
+  try { state.projects = JSON.parse(localStorage.getItem(LS_PROJECTS) || '[]'); } catch (e) {}
+  try { state.settings = Object.assign({ endpoint: '', apiKey: '', model: 'deepseek-chat' }, JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}')); } catch (e) {}
+}
+function saveProjects() {
+  try { localStorage.setItem(LS_PROJECTS, JSON.stringify(state.projects)); } 
+  catch (e) { toast('Storage limit reached — some data was not saved.', 'warn'); }
+}
+function currentProject() { return state.projects.find(p => p.id === state.currentId) || null; }
+function touch(p) { p.updatedAt = Date.now(); }
+
+function render() {
+  if (state.currentId) {
+    $('#view-home').classList.add('hidden');
+    $('#view-workspace').classList.remove('hidden');
+    $('#searchContainer').classList.remove('hidden');
+    if (!state.searchQuery) $('#globalSearch').value = '';
+    renderWorkspace();
+  } else {
+    $('#view-workspace').classList.add('hidden');
+    $('#view-home').classList.remove('hidden');
+    $('#searchContainer').classList.add('hidden');
+    renderHome();
+  }
+}
+
+function handleSearch(val) {
+  state.searchQuery = val.trim();
+  renderWorkspace();
+}
+
+/* ================= HOME ================= */
+function renderHome() {
+  const grid = $('#projectGrid');
+  if (!state.projects.length) {
+    grid.innerHTML = `<div class="col-span-full bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12">
+      ${emptyState('📂', 'No projects yet', 'Create your first project to start analysing contracts.', '<button onclick="openNewProject()" class="bg-brand text-white font-bold px-6 py-2.5 rounded-xl hover:bg-brand-dark transition shadow-md">+ Create New Project</button>')}
+    </div>`;
+    return;
+  }
+  
+  grid.innerHTML = state.projects.map(p => {
+    let voCount = 0, totalAmount = 0, overdueCount = 0;
+    if (p.analysis && p.analysis.vo_details) {
+      voCount = p.analysis.vo_details.length;
+      p.analysis.vo_details.forEach(vo => {
+        const cleanAmount = (vo.amount || '').replace(/[^0-9.]/g, '');
+        if (cleanAmount) totalAmount += parseFloat(cleanAmount);
+        if (vo.sop_check && vo.sop_check.toLowerCase().includes('overdue')) overdueCount++;
+      });
+    }
+    const summary = p.analysis && p.analysis.project_overview ? p.analysis.project_overview : {};
+
+    return `
+    <div class="group relative bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-xl hover:border-brand/40 transition-all duration-200 cursor-pointer flex flex-col h-full" onclick="openProject('${p.id}')">
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-light to-blue-100 grid place-items-center text-brand font-bold text-lg shadow-sm border border-blue-200/50">
+          ${esc((p.name || 'P').replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || 'QS')}
+        </div>
+        <button onclick="deleteProject(event,'${p.id}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 transition p-2 rounded-lg hover:bg-rose-50" title="Delete project">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+      </div>
+      <h3 class="font-bold text-lg text-slate-900 truncate mb-1">${esc(p.name)}</h3>
+      
+      ${p.analysis ? `
+        <div class="flex flex-wrap gap-2 mt-2 mb-4 text-[11px] font-bold">
+          <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200">${(p.files || []).length} Files</span>
+          <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-200">${voCount} VOs</span>
+          <span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md border border-emerald-200">HKD ${totalAmount.toLocaleString('en-US', {maximumFractionDigits: 0})}</span>
+          ${overdueCount > 0 ? `<span class="bg-rose-50 text-rose-700 px-2 py-1 rounded-md border border-rose-200">${overdueCount} Overdue</span>` : ''}
+        </div>
+        <p class="text-xs text-slate-500 mb-4 line-clamp-2">${esc(summary.duration || 'Duration not found')} · ${esc(summary.contract_sum || 'Contract Sum not found')}</p>
+      ` : `<p class="text-sm text-slate-500 mb-4 flex-1">${(p.files || []).length} file(s) · Not analyzed</p>`}
+
+      <div class="flex items-center justify-between text-[11px] font-medium text-slate-400 pt-4 border-t border-slate-100 mt-auto">
+        <span>Updated ${new Date(p.updatedAt || p.createdAt).toLocaleDateString('en-GB')}</span>
+        <span class="text-brand flex items-center gap-1 group-hover:translate-x-1 transition-transform">Open &rarr;</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderWorkspace() {
+  const p = currentProject();
+  if (!p) { state.currentId = null; render(); return; }
+
+  $('#projTitle').textContent = p.name;
+  $('#projMeta').textContent = `${(p.files || []).length} file(s) · ` + (p.analysis ? 'Analyzed ' + new Date(p.analyzedAt).toLocaleString('en-GB') : 'Not analyzed yet');
+
+  $('#tabBar').innerHTML = TABS.map(t => `
+    <button onclick="switchTab('${t.key}')" class="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${state.tab === t.key ? 'bg-brand text-white shadow-md shadow-brand/20 scale-[1.02]' : 'text-slate-600 hover:bg-slate-200/50 hover:text-slate-900'}">${t.label}</button>
+  `).join('');
+
+  try {
+    $('#panelHost').innerHTML = renderPanel(state.tab, p);
+    bindPanel();
+  } catch (e) {
+    $('#panelHost').innerHTML = `<div class="p-6 bg-white rounded-2xl border border-rose-200 text-rose-700 shadow-sm"><h3 class="font-bold mb-2">Error loading tab</h3><p class="text-sm">${e.message}</p></div>`;
+  }
+}
+
+function switchTab(key) { state.tab = key; renderWorkspace(); }
+function openProject(id) { state.currentId = id; state.tab = 'overview'; state.searchQuery = ''; render(); }
+function goHome() { state.currentId = null; state.tab = 'overview'; state.searchQuery = ''; render(); }
+
+function openNewProject() { $('#newProjName').value = ''; $('#modalNewProject').classList.remove('hidden'); setTimeout(() => $('#newProjName').focus(), 50); }
+function closeNewProject() { $('#modalNewProject').classList.add('hidden'); }
+function confirmNewProject() {
+  const name = ($('#newProjName').value || '').trim() || 'Untitled Project';
+  const p = { id: uid(), name, createdAt: Date.now(), updatedAt: Date.now(), files: [], analysis: null, analyzedAt: null };
+  state.projects.unshift(p); saveProjects(); closeNewProject(); state.currentId = p.id; state.tab = 'overview'; render();
+}
+function deleteProject(e, id) {
+  e.stopPropagation(); if (!confirm('Delete this project and all of its saved data?')) return;
+  state.projects = state.projects.filter(p => p.id !== id); if (state.currentId === id) state.currentId = null;
+  saveProjects(); render();
+}
+
+function renderPanel(tab, p) {
+  switch (tab) {
+    case 'overview': return panelOverview(p);
+    case 'doc': return panelDoc(p);
+    case 'dates': return panelDates(p);
+    case 'timer': return panelTimer(p);
+    case 'organizer': return panelOrganizer(p);
+    case 'check': return panelCheck(p);
+    default: return panelOverview(p);
+  }
+}
+
+function noAnalysis() {
+  return `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm">${emptyState('🤖', 'No analysis yet', 'Go to the Documents tab, upload your PDFs, and click “Analyze with AI”.')}</div>`;
+}
+
+/* ================= TAB 1: PROJECT OVERVIEW ================= */
+function panelOverview(p) {
+  const a = p.analysis;
+  if (!a) return noAnalysis();
+  const ov = a.project_overview || {};
+
+  return `<div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
+    <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+      <div class="w-10 h-10 rounded-lg bg-brand-light text-brand flex items-center justify-center">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+      </div>
+      <div>
+        <h2 class="text-xl font-bold text-slate-900">Contract Executive Summary</h2>
+        <p class="text-xs text-slate-500">High-level project parameters extracted by AI</p>
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Project Name</div>
+        <div class="font-bold text-slate-800 text-lg">${hl(ov.project_name) || '—'}</div>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Contract Sum</div>
+        <div class="font-bold text-brand text-lg">${hl(ov.contract_sum) || '—'}</div>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Duration / Ongoing Period</div>
+        <div class="font-bold text-slate-800 text-lg">${hl(ov.duration) || '—'}</div>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
+        <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Commencement Date</div>
+        <div class="font-bold text-slate-800 text-lg">${fmtDate(ov.commencement_date)}</div>
+      </div>
+    </div>
+    
+    <div class="mt-8 bg-blue-50 rounded-xl p-5 border border-blue-100">
+      <h3 class="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
+        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+        AI Analysis Note
+      </h3>
+      <p class="text-xs text-blue-800 leading-relaxed">
+        This summary is extracted directly from the uploaded files. If fields show "—", the 60-year HK QS AI could not find explicit references in the text. Please verify against the original documents using the Global Search bar above.
+      </p>
+    </div>
+  </div>`;
+}
+
+/* ================= TAB 2: DOCUMENTS ================= */
+function fileRow(f, aiDoc) {
+  let statusColor = 'text-slate-400';
+  if (f.status === 'reading') statusColor = 'text-amber-600';
+  if (f.status === 'ocr') statusColor = 'text-blue-600';
+  if (f.status === 'ready') statusColor = 'text-emerald-600';
+  if (f.status === 'error') statusColor = 'text-rose-600';
+
+  return `<div class="flex flex-col gap-2 p-3 rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-lg ${/\.pdf$/i.test(f.name) ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'} grid place-items-center text-[10px] font-bold shrink-0">${/\.pdf$/i.test(f.name) ? 'PDF' : 'TXT'}</div>
+      <div class="min-w-0 flex-1">
+        <div class="text-sm font-semibold text-slate-800 truncate" title="${esc(f.name)}">${hl(f.name)}</div>
+        <div class="text-[11px] font-medium text-slate-400 mt-0.5">${fmtBytes(f.size)} · <span data-file-status="${f.id}" class="${statusColor}">${esc(f.progress || 'Ready')}</span></div>
+      </div>
+      <button onclick="removeFile('${f.id}')" class="text-slate-300 hover:text-rose-600 hover:bg-rose-50 transition p-2 rounded-lg shrink-0" title="Remove">✕</button>
+    </div>
+    ${(f.status === 'error' || (f.text && f.text.length < 10)) ? `
+      <div class="mt-1 bg-amber-50 border border-amber-100 rounded-lg p-2 text-[11px] text-amber-800 flex items-center justify-between gap-2">
+        <span>No text extracted (scanned PDF).</span>
+        <button onclick="openManualText('${f.id}')" class="font-bold underline hover:text-amber-900 shrink-0">Paste Text</button>
+      </div>
+    ` : ''}
+    ${aiDoc && aiDoc.summary ? `
+      <div class="mt-2 bg-slate-50/80 rounded-lg p-3 border border-slate-100">
+        <div class="text-[10px] font-bold text-brand mb-1 flex items-center gap-1">
+          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"></path></svg>
+          QS Reading Summary
+        </div>
+        <p class="text-xs text-slate-600 leading-relaxed">${hl(aiDoc.summary)}</p>
+      </div>
+    ` : ''}
+  </div>`;
+}
+
+function panelDoc(p) {
+  const files = p.files || [];
+  const a = p.analysis;
+  let sortedFiles = [...files];
+  if (state.fileSort === 'name_asc') sortedFiles.sort((a,b) => a.name.localeCompare(b.name));
+  else if (state.fileSort === 'size_desc') sortedFiles.sort((a,b) => b.size - a.size);
+  else if (state.fileSort === 'date_desc') sortedFiles.reverse();
+  
+  return `
+  <div class="grid lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-slate-800">1. Upload Documents</h2>
+        <select onchange="state.fileSort = this.value; renderWorkspace();" class="text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-brand">
+          <option value="date_desc" ${state.fileSort === 'date_desc' ? 'selected' : ''}>Newest First</option>
+          <option value="date_asc" ${state.fileSort === 'date_asc' ? 'selected' : ''}>Oldest First</option>
+          <option value="name_asc" ${state.fileSort === 'name_asc' ? 'selected' : ''}>Name A-Z</option>
+          <option value="size_desc" ${state.fileSort === 'size_desc' ? 'selected' : ''}>Size Descending</option>
+        </select>
+      </div>
+      <p class="text-xs text-slate-500 mb-4">PDFs are scanned locally. If a PDF is scanned/image-based, OCR will run automatically.</p>
+
+      <div id="dropzone" tabindex="0" class="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center cursor-pointer hover:border-brand hover:bg-brand-light/30 transition-all duration-200 outline-none focus:border-brand group flex flex-col items-center justify-center">
+        <div class="w-16 h-16 mb-4 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+        </div>
+        <p class="text-sm text-slate-600 font-medium"><span class="text-brand">Click to browse</span> or drag &amp; drop</p>
+        <p class="text-xs text-slate-400 mt-1">PDF or TXT files supported</p>
+        <input id="fileInput" type="file" multiple accept=".pdf,.txt,application/pdf,text/plain" class="hidden">
+      </div>
+
+      <div class="mt-5 space-y-2 max-h-[400px] overflow-y-auto pr-1">
+        ${sortedFiles.length ? sortedFiles.map(f => {
+          let aiDoc = null;
+          if (a && a.documents) aiDoc = a.documents.find(d => d.name === f.name || f.name.includes(d.name) || d.name.includes(f.name));
+          return fileRow(f, aiDoc);
+        }).join('') : '<p class="text-sm text-slate-400 text-center py-4">No documents uploaded yet.</p>'}
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">2. AI Classification</h2>
+          <p class="text-xs text-slate-500 mt-1">Chunked and deep-scanned by our 60-year HK QS persona.</p>
+        </div>
+        <button id="analyzeBtn" onclick="analyzeProject()" ${state.busy ? 'disabled' : ''} class="shrink-0 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 ${state.busy ? 'bg-slate-300 text-white cursor-not-allowed shadow-none' : 'bg-brand hover:bg-brand-dark text-white hover:shadow-lg hover:-translate-y-0.5'}">
+          ${state.busy ? '<div class="w-4 h-4 rounded-full loader border-2 border-white border-t-transparent"></div> Processing...' : 'Analyze with AI'}
+        </button>
+      </div>
+      
+      ${state.busy && state.batchInfo ? `<div class="bg-blue-50 text-blue-800 text-xs p-3 rounded-lg mb-4 animate-pulse border border-blue-100 font-medium">${state.batchInfo}</div>` : ''}
+
+      <div class="flex-1 space-y-3 overflow-y-auto pr-1">
+        ${a ? (a.documents && a.documents.length ? a.documents.map(docCard).join('') : '<p class="text-sm text-slate-400 text-center py-4">AI returned no document classifications.</p>') 
+             : '<div class="h-full flex flex-col items-center justify-center text-slate-400 py-10"><p class="text-sm">Upload files and click Analyze to see results.</p></div>'}
+      </div>
+    </div>
+  </div>`;
+}
+
+function docCard(d) {
+  const t = (d.type || 'Other').toUpperCase();
+  return `<div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-brand/30 transition">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 ${TYPE_COLORS[t] || TYPE_COLORS.Other}">${esc(t)}</span>
+      <span class="text-sm font-bold text-slate-800 break-all truncate" title="${esc(d.name)}">${hl(d.name)}</span>
+    </div>
+    <p class="text-xs text-slate-600 leading-relaxed">${hl(d.summary || 'No summary provided.')}</p>
+  </div>`;
+}
+
+/* ================= TAB 3: DATES & CLAUSES ================= */
+function panelDates(p) {
+  const a = p.analysis; if (!a) return noAnalysis();
+  const dates = a.key_dates || [], clauses = a.key_clauses || [];
+  return `<div class="grid lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Key Dates</h2>
+      ${dates.length ? `<div class="overflow-x-auto rounded-xl border border-slate-100"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500"><tr><th class="py-3 px-4 font-bold">Date</th><th class="py-3 px-4 font-bold">Event & Citation</th><th class="py-3 px-4 font-bold">Page</th></tr></thead><tbody class="divide-y divide-slate-100">${dates.map(d => `<tr><td class="py-3 px-4 font-bold text-brand whitespace-nowrap">${fmtDate(d.date)}</td><td class="py-3 px-4 text-slate-700 font-medium">${hl(d.event || '')}<div class="text-[10px] text-slate-400 mt-1">Source: ${hl(d.source_file || 'N/A')} - ${hl(d.title || 'N/A')}</div></td><td class="py-3 px-4 text-xs font-bold text-slate-500">${hl(d.page || '—')}</td></tr>`).join('')}</tbody></table></div>` : emptyState('📅', 'No key dates found', 'The AI did not detect any contractual dates.')}
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">Key Clauses</h2>
+      ${clauses.length ? `<div class="max-h-[600px] overflow-y-auto pr-2 space-y-3">${clauses.map(c => `<div class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2 flex-wrap"><span class="text-sm font-bold text-brand">${hl(c.clause || 'Clause')}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">Source: ${hl(c.source_file || 'N/A')} p.${hl(c.page || 'N/A')}</span></div><p class="text-sm text-slate-600">${hl(c.text || '')}</p>${c.impact ? `<div class="mt-3 text-xs text-amber-900 bg-amber-50 rounded-lg p-3"><span class="font-bold">Impact:</span> ${hl(c.impact)}</div>` : ''}</div>`).join('')}</div>` : emptyState('📝', 'No key clauses found', 'The AI did not detect any SCC alterations.')}
+    </div>
+  </div>`;
+}
+
+/* ================= TAB 4: VO & SOP TIMER ================= */
+function sopStatus(vo, period) {
+  const issued = parseDate(vo.date_issued), submitted = parseDate(vo.date_submitted);
+  if (!issued) return { label: 'Unknown', cls: 'slate', detail: 'Date issued missing' };
+  const deadline = new Date(issued.getTime() + period * 86400000);
+  if (!submitted) return utcToday() > deadline.getTime() ? { label: 'Overdue', cls: 'rose', detail: `Deadline ${fmtDate(deadline)} passed` } : { label: 'Pending', cls: 'amber', detail: `Due ${fmtDate(deadline)}` };
+  const days = Math.round((submitted.getTime() - issued.getTime()) / 86400000);
+  const ok = submitted.getTime() <= deadline.getTime();
+  return { label: ok ? 'Compliant' : 'Overdue', cls: ok ? 'emerald' : 'rose', detail: `${days} days after issue (limit ${period}d)` };
+}
+
+function panelTimer(p) {
+  const a = p.analysis; if (!a) return noAnalysis();
+  const vos = a.vo_details || [];
+  return `<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+    <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
+      <div><h2 class="text-lg font-bold text-slate-800">VO &amp; SOP Timer</h2><p class="text-xs text-slate-500 mt-1">Verify against Cap. 652 response period.</p></div>
+      <div><label class="block text-[11px] font-bold text-slate-600 mb-1.5">Response period (days)</label><input id="sopPeriod" type="number" min="1" value="${state.sopPeriod}" class="w-28 px-3 py-2 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
+    </div>
+    <div id="timerTable">${vos.length ? `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase text-slate-500"><tr><th class="py-3 px-4 font-bold">VO No.</th><th class="py-3 px-4 font-bold">Date Issued</th><th class="py-3 px-4 font-bold">Date Submitted</th><th class="py-3 px-4 font-bold">Source</th><th class="py-3 px-4 font-bold">Computation</th><th class="py-3 px-4 font-bold">SOP Status</th></tr></thead><tbody class="divide-y divide-slate-100">${vos.map(vo => { const st = sopStatus(vo, state.sopPeriod); return `<tr><td class="py-3 px-4 font-bold text-slate-800">${hl(vo.vo_number || '—')}</td><td class="py-3 px-4">${fmtDate(vo.date_issued)}</td><td class="py-3 px-4">${fmtDate(vo.date_submitted)}</td><td class="py-3 px-4 text-xs">${hl(vo.source_file || 'N/A')} p.${hl(vo.page || '—')}</td><td class="py-3 px-4 text-xs">${esc(st.detail)}</td><td class="py-3 px-4">${badge(st.label, st.cls)}</td></tr>`; }).join('')}</tbody></table></div>` : emptyState('⏱️', 'No VO records', 'Run AI analysis to populate.')}</div>
+  </div>`;
+}
+function updateTimerTable() {
+  const p = currentProject(); if (!p) return;
+  const period = parseInt($('#sopPeriod').value, 10) || 30; state.sopPeriod = period;
+  const vos = p.analysis?.vo_details || [];
+  $('#timerTable').innerHTML = vos.length ? `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase text-slate-500"><tr><th class="py-3 px-4 font-bold">VO No.</th><th class="py-3 px-4 font-bold">Date Issued</th><th class="py-3 px-4 font-bold">Date Submitted</th><th class="py-3 px-4 font-bold">Source</th><th class="py-3 px-4 font-bold">Computation</th><th class="py-3 px-4 font-bold">SOP Status</th></tr></thead><tbody class="divide-y divide-slate-100">${vos.map(vo => { const st = sopStatus(vo, period); return `<tr><td class="py-3 px-4 font-bold text-slate-800">${hl(vo.vo_number || '—')}</td><td class="py-3 px-4">${fmtDate(vo.date_issued)}</td><td class="py-3 px-4">${fmtDate(vo.date_submitted)}</td><td class="py-3 px-4 text-xs">${hl(vo.source_file || 'N/A')} p.${hl(vo.page || '—')}</td><td class="py-3 px-4 text-xs">${esc(st.detail)}</td><td class="py-3 px-4">${badge(st.label, st.cls)}</td></tr>`; }).join('')}</tbody></table></div>` : emptyState('⏱️', 'No VO records', 'Run AI analysis to populate.');
+}
+
+/* ================= TAB 5: VO ORGANIZER ================= */
+function panelOrganizer(p) {
+  const a = p.analysis; if (!a) return noAnalysis();
+  const vos = a.vo_details || [];
+  if (!vos.length) return `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm">${emptyState('📑', 'No VOs found', 'The AI did not detect any Variation Orders.')}</div>`;
+  return `<div class="space-y-4">${vos.map((vo, i) => { const st = sopStatus(vo, state.sopPeriod); return `<details class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group"><summary class="flex items-center gap-4 p-5 cursor-pointer select-none hover:bg-slate-50 transition"><span class="chev text-slate-300 transition-transform text-xs group-hover:text-brand">▶</span><span class="font-bold text-base text-slate-800">${hl(vo.vo_number || ('VO ' + (i + 1)))}</span><span class="ml-auto text-base font-bold text-brand whitespace-nowrap">${hl(vo.amount || '—')}</span>${badge(st.label, st.cls)}</summary><div class="border-t border-slate-100 p-5 grid sm:grid-cols-4 gap-6 bg-slate-50/50 text-sm"><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Amount</div><div class="font-bold text-slate-800">${hl(vo.amount || '—')}</div></div><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Issued</div><div class="font-medium text-slate-800">${fmtDate(vo.date_issued)}</div></div><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Submitted</div><div class="font-medium text-slate-800">${fmtDate(vo.date_submitted)}</div></div><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Source</div><div class="font-medium text-slate-800">${hl(vo.source_file || '—')} p.${hl(vo.page || '—')}</div></div></div></details>`; }).join('')}</div>`;
+}
+
+/* ================= TAB 6: GCC/SCC & CALCULATOR ================= */
+function panelCheck(p) {
+  const a = p.analysis; if (!a) return noAnalysis();
+  const map = a.scc_gcc_mapping || [];
+  return `<div class="grid lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <h2 class="text-lg font-bold text-slate-800 mb-4">SCC vs GCC Modifications</h2>
+      ${map.length ? `<div class="space-y-3 max-h-[600px] overflow-y-auto pr-2">${map.map(m => `<div class="border border-slate-200 rounded-xl p-4 flex gap-4 bg-white"><div class="flex flex-col gap-2 shrink-0 w-20"><div class="bg-brand-light/50 rounded p-2 text-center"><div class="text-[9px] font-bold text-slate-400">SCC</div><div class="text-sm font-bold text-brand">${hl(m.scc_ref || '—')}</div></div><div class="bg-slate-50 rounded p-2 text-center"><div class="text-[9px] font-bold text-slate-400">GCC</div><div class="text-sm font-bold text-slate-600">${hl(m.gcc_ref || '—')}</div></div></div><div class="flex-1"><p class="text-sm text-slate-700">${hl(m.change || '')}</p><p class="text-[10px] text-slate-400 mt-2">Source: ${hl(m.source_file || 'N/A')}</p></div></div>`).join('')}</div>` : emptyState('🔍', 'No modifications detected', 'The AI found no SCC overrides.')}
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm h-fit">
+      <h2 class="text-lg font-bold text-slate-800">Cap. 652 Timeline Calculator</h2>
+      <div class="space-y-4 my-5"><div><label class="block text-xs font-bold text-slate-700 mb-1.5">Payment claim date</label><input id="calcClaimDate" type="date" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 transition"></div><div><label class="block text-xs font-bold text-slate-700 mb-1.5">Response period (days)</label><input id="calcPeriod" type="number" min="1" value="30" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 transition"></div></div>
+      <div id="calcOut"></div>
+    </div>
+  </div>`;
+}
+
+function updateCalc() {
+  const cd = $('#calcClaimDate'), cp = $('#calcPeriod'), out = $('#calcOut'); if (!cd || !cp || !out) return;
+  const claim = parseDate(cd.value), days = parseInt(cp.value, 10);
+  if (!claim || !days || days <= 0) { out.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Enter a valid claim date.</p>'; return; }
+  const deadline = new Date(claim.getTime() + days * 86400000), today = utcToday();
+  const pct = Math.max(0, Math.min(100, ((today - claim.getTime()) / (deadline.getTime() - claim.getTime())) * 100));
+  const remaining = Math.round((deadline.getTime() - today) / 86400000), overdue = remaining < 0, near = !overdue && remaining <= 5;
+  out.innerHTML = `<div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/80 shadow-inner"><div class="flex flex-wrap gap-6 mb-6"><div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Claim Date</div><div class="font-bold text-slate-800">${fmtDate(cd.value)}</div></div><div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Deadline (+${days}d)</div><div class="font-bold text-brand">${fmtDate(deadline.toISOString().slice(0, 10))}</div></div><div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">${overdue ? 'Overdue by' : 'Days Remaining'}</div><div class="font-bold text-lg ${overdue ? 'text-rose-600' : near ? 'text-amber-600' : 'text-emerald-600'}">${Math.abs(remaining)} <span class="text-xs text-slate-500">days</span></div></div></div><div class="h-3 w-full bg-slate-200 rounded-full overflow-hidden"><div class="h-full ${overdue ? 'bg-rose-500' : near ? 'bg-amber-500' : 'bg-emerald-500'} rounded-full" style="width:${pct.toFixed(1)}%"></div></div><div class="flex justify-between text-[10px] font-bold text-slate-400 mt-2 uppercase"><span>Claim Start</span><span>Deadline</span></div></div>`;
+}
+
+function bindPanel() {
+  const dz = document.getElementById('dropzone'), fi = document.getElementById('fileInput');
+  if (dz && fi) {
+    dz.addEventListener('click', () => fi.click());
+    dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fi.click(); } });
+    ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('border-brand', 'bg-brand-light/50'); }));
+    ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('border-brand', 'bg-brand-light/50'); }));
+    dz.addEventListener('drop', e => { if (e.dataTransfer?.files?.length) handleFiles(e.dataTransfer.files); });
+    fi.addEventListener('change', e => { if (e.target.files?.length) handleFiles(e.target.files); });
+  }
+  const sp = document.getElementById('sopPeriod'); if (sp) sp.addEventListener('input', updateTimerTable);
+  const cd = document.getElementById('calcClaimDate');
+  if (cd) { if (!cd.value) cd.value = new Date().toISOString().slice(0, 10); cd.addEventListener('input', updateCalc); $('#calcPeriod').addEventListener('input', updateCalc); updateCalc(); }
+}
+
+/* ================= OCR & FILE HANDLING ================= */
+function setFileStatus(id, text, cls) {
+  const el = document.querySelector(`[data-file-status="${id}"]`); if (!el) return;
+  el.textContent = text; if (cls) el.className = cls;
+}
+
+async function extractPdfText(file, onProgress) {
+  if (typeof pdfjsLib === 'undefined') throw new Error('pdf.js failed to load');
+  const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+  let out = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    let pageText = content.items.map(it => it.str).join(' ').trim();
+    if (pageText.length < 20) { // OCR Fallback
+      if (onProgress) onProgress(i, pdf.numPages, 'ocr', 0);
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.height = viewport.height; canvas.width = viewport.width;
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      const result = await Tesseract.recognize(canvas, 'eng', { logger: m => { if (m.status === 'recognizing text' && onProgress) onProgress(i, pdf.numPages, 'ocr', Math.round(m.progress * 100)); } });
+      pageText = result.data.text;
+    }
+    // Append page marker for AI citations
+    out += `[Page ${i}] ${pageText}\n\n`;
+  }
+  return out;
+}
+
+async function handleFiles(fileList) {
+  const p = currentProject(); if (!p) return;
+  const jobs = Array.from(fileList).map(file => { const rec = { id: uid(), name: file.name, size: file.size, text: '', status: 'reading', progress: 'Reading…' }; p.files.push(rec); return { file, rec }; });
+  render();
+
+  for (const { file, rec } of jobs) {
+    try {
+      let text = '';
+      if (/\.pdf$/i.test(file.name) || file.type === 'application/pdf') {
+        text = await extractPdfText(file, (cur, total, mode, pct) => {
+          const msg = mode === 'ocr' ? `OCR: Page ${cur}/${total} (${pct}%)` : `Reading: Page ${cur}/${total}`;
+          setFileStatus(rec.id, msg, mode === 'ocr' ? 'text-blue-600 font-bold' : 'text-amber-600 font-bold');
+        });
+      } else { 
+        text = await file.text(); 
+        text = `[Page 1] ${text}`; // Add pseudo-page for txt files
+      }
+      rec.text = (text || '').trim();
+      rec.status = rec.text.length > 10 ? 'ready' : 'error';
+      rec.progress = rec.text.length > 10 ? `${rec.text.length.toLocaleString()} chars` : 'No text extractable';
+    } catch (err) { rec.status = 'error'; rec.progress = err.message || 'Failed to read'; }
+    touch(p); saveProjects(); render();
+  }
+  toast('Documents processed. Ready for chunked AI analysis.', 'ok');
+}
+
+function removeFile(id) {
+  const p = currentProject(); if (!p) return;
+  p.files = (p.files || []).filter(f => f.id !== id); touch(p); saveProjects(); render();
+}
+
+function openManualText(fileId) {
+  state.targetFileIdForManualText = fileId;
+  const p = currentProject(), f = p.files.find(x => x.id === fileId);
+  $('#manualTextArea').value = f && f.text ? f.text : '';
+  $('#modalManualText').classList.remove('hidden');
+}
+function closeManualText() { $('#modalManualText').classList.add('hidden'); state.targetFileIdForManualText = null; }
+function saveManualText() {
+  const p = currentProject(); if (!p || !state.targetFileIdForManualText) return;
+  const f = p.files.find(x => x.id === state.targetFileIdForManualText);
+  if (f) {
+    f.text = `[Page 1] ${$('#manualTextArea').value.trim()}`; // Add pseudo-page
+    f.status = f.text.length > 10 ? 'ready' : 'error';
+    f.progress = f.text.length > 10 ? `${f.text.length.toLocaleString()} chars (manual)` : 'Empty';
+    touch(p); saveProjects(); closeManualText(); render();
+    toast('Text saved manually.', 'ok');
+  }
+}
+
+/* ================= AI CORE LOGIC ================= */
+
+// Strict 60-year HK QS Persona & JSON Schema with Citations
+const SYSTEM_PROMPT = `You are a 60-year veteran Quantity Surveyor (QS) in Hong Kong. You possess unparalleled expertise in HKIA/HKIS standard forms, GCC/SCC, Cap. 652 (Security of Payment Ordinance), VO valuation, and EOT claims.
+Your task is to analyze the provided document chunk strictly and accurately.
+
+CRITICAL RULES:
+1. NO HALLUCINATION: Only extract what is explicitly written in the text. If a field is missing, leave it as "" or [].
+2. CITATIONS REQUIRED: For every extracted item, you MUST provide the exact "source_file", the "page" number (look for [Page X] markers), and the "title" (e.g., Clause 15, VO 01).
+3. OUTPUT RAW JSON ONLY. No markdown formatting, no explanations.
+
+REQUIRED JSON SCHEMA:
+{
+  "project_overview": {
+    "project_name": "string",
+    "contract_sum": "string (e.g. HKD 1,200,000,000)",
+    "duration": "string (e.g. 730 days)",
+    "commencement_date": "YYYY-MM-DD"
+  },
+  "documents": [{"name": "string", "type": "GCC | SCC | VO | AI | Other", "summary": "string"}],
+  "key_dates": [{"date": "YYYY-MM-DD", "event": "string", "source_file": "string", "page": "string", "title": "string"}],
+  "key_clauses": [{"clause": "string", "text": "string", "impact": "string", "source_file": "string", "page": "string", "title": "string"}],
+  "vo_details": [{"vo_number": "string", "amount": "string", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
+  "scc_gcc_mapping": [{"scc_ref": "string", "gcc_ref": "string", "change": "string", "source_file": "string"}]
+}`;
+
+function normalizeEndpoint(url) {
+  let u = (url || '').trim(); if (!u) throw new Error('API endpoint is empty');
+  u = u.replace(/\/+$/, '');
+  return /\/chat\/completions$/i.test(u) ? u : u + '/chat/completions';
+}
+
+async function callAPIRaw(endpoint, apiKey, model, messages, maxTokens) {
+  const headers = { 'Content-Type': 'application/json' };
+  if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
+  const body = { model: model || 'deepseek-chat', messages, temperature: 0.1, stream: false };
+  if (maxTokens) body.max_tokens = maxTokens;
+
+  let res;
+  try { res = await fetch(normalizeEndpoint(endpoint), { method: 'POST', headers, body: JSON.stringify(body) }); } 
+  catch (e) { throw new Error('Network / CORS error: ' + e.message); }
+  
+  if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error(`HTTP ${res.status} ${res.statusText}${t ? ' — ' + t.slice(0, 200) : ''}`); }
+  const data = await res.json();
+  const content = data?.choices?.[0]?.message?.content;
+  if (typeof content !== 'string') throw new Error('Unexpected response shape');
+  return content;
+}
+
+function parseAIJson(raw) {
+  let s = String(raw || '').trim().replace(/```json/gi, '').replace(/```/g, '').trim();
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a === -1 || b === -1 || b <= a) throw new Error('No JSON object found in the response');
+  s = s.slice(a, b + 1);
+  try { return JSON.parse(s); } catch (e) { return JSON.parse(s.replace(/,\s*([}\]])/g, '$1')); }
+}
+
+/* ================= AI MAP-REDUCE (CHUNKING) ================= */
+async function analyzeProject() {
+  const p = currentProject(); if (!p) return;
+  const ready = (p.files || []).filter(f => f.text && f.text.trim().length > 10);
+  
+  if (!ready.length) { toast('Upload at least one document with extracted text first.', 'warn'); return; }
+
+  state.busy = true; renderWorkspace();
+
+  try {
+    const CHUNK_SIZE = 15000; // Characters per chunk
+    let allChunks = []; // array of { text, sourceFile }
+    
+    // 1. Prepare Chunks (with source file tracking)
+    ready.forEach(f => {
+      const text = f.text;
+      for (let i = 0; i < text.length; i += CHUNK_SIZE) {
+        allChunks.push({
+          text: text.slice(i, i + CHUNK_SIZE),
+          sourceFile: f.name
+        });
+      }
+    });
+
+    let finalResult = {
+      project_overview: {},
+      documents: [],
+      key_dates: [],
+      key_clauses: [],
+      vo_details: [],
+      scc_gcc_mapping: []
+    };
+
+    // 2. Process Chunks (Map Phase)
+    for (let i = 0; i < allChunks.length; i++) {
+      const chunk = allChunks[i];
+      state.batchInfo = `Processing chunk ${i + 1} of ${allChunks.length} (File: ${chunk.sourceFile})...`;
+      renderWorkspace();
+
+      const prompt = `Here is a chunk of text from the file "${chunk.sourceFile}". Please analyze it and return the JSON data. Remember to use [Page X] markers for citations.\n\nTEXT:\n${chunk.text}`;
+      
+      try {
+        const raw = await callAPIRaw(state.settings.endpoint, state.settings.apiKey, state.settings.model, [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: prompt }
+        ]);
+        const chunkJson = parseAIJson(raw);
+
+        // 3. Merge Logic (Reduce Phase in JS)
+        
+        // Merge Project Overview (prioritize non-empty)
+        if (chunkJson.project_overview) {
+          for (const [key, val] of Object.entries(chunkJson.project_overview)) {
+            if (val && !finalResult.project_overview[key]) finalResult.project_overview[key] = val;
+          }
+        }
+
+        // Merge Documents (deduplicate by name)
+        if (chunkJson.documents) {
+          chunkJson.documents.forEach(d => {
+            if (!finalResult.documents.find(x => x.name === d.name)) finalResult.documents.push(d);
+          });
+        }
+
+        // Merge Key Dates (deduplicate by date + event)
+        if (chunkJson.key_dates) {
+          chunkJson.key_dates.forEach(d => {
+            if (!finalResult.key_dates.find(x => x.date === d.date && x.event === d.event)) finalResult.key_dates.push(d);
+          });
+        }
+
+        // Merge Key Clauses (deduplicate by clause + text)
+        if (chunkJson.key_clauses) {
+          chunkJson.key_clauses.forEach(c => {
+            if (!finalResult.key_clauses.find(x => x.clause === c.clause && x.text === c.text)) finalResult.key_clauses.push(c);
+          });
+        }
+
+        // Merge VOs (deduplicate by vo_number)
+        if (chunkJson.vo_details) {
+          chunkJson.vo_details.forEach(v => {
+            if (!finalResult.vo_details.find(x => x.vo_number === v.vo_number)) finalResult.vo_details.push(v);
+          });
+        }
+
+        // Merge SCC/GCC Mappings (deduplicate by refs)
+        if (chunkJson.scc_gcc_mapping) {
+          chunkJson.scc_gcc_mapping.forEach(m => {
+            if (!finalResult.scc_gcc_mapping.find(x => x.scc_ref === m.scc_ref && x.gcc_ref === m.gcc_ref)) finalResult.scc_gcc_mapping.push(m);
+          });
+        }
+
+      } catch (err) {
+        console.warn(`Failed to process chunk ${i+1}`, err);
+        // Continue to next chunk, do not fail entire process
+      }
+      
+      // Small delay to avoid API rate limits
+      await new Promise(r => setTimeout(r, 500));
+    }
+
+    // Finalize
+    p.analysis = finalResult;
+    p.analyzedAt = Date.now(); touch(p); saveProjects();
+    toast('Analysis complete — all chunks processed.', 'ok');
+
+  } catch (e) {
+    toast('AI analysis failed: ' + e.message, 'error');
+  } finally {
+    state.busy = false; state.batchInfo = ''; renderWorkspace();
+  }
+}
+
+/* ================= SETTINGS ================= */
+function openSettings() {
+  $('#setEndpoint').value = state.settings.endpoint || '';
+  $('#setApiKey').value = state.settings.apiKey || '';
+  $('#setModel').value = state.settings.model || 'deepseek-chat';
+  $('#testResult').textContent = ''; $('#testResult').className = 'text-xs mt-3 min-h-[1.25rem] font-medium';
+  $('#modalSettings').classList.remove('hidden');
+}
+function closeSettings() { $('#modalSettings').classList.add('hidden'); }
+
+function saveSettings() {
+  state.settings = { endpoint: ($('#setEndpoint').value || '').trim(), apiKey: ($('#setApiKey').value || '').trim(), model: ($('#setModel').value || '').trim() || 'deepseek-chat' };
+  try { localStorage.setItem(LS_SETTINGS, JSON.stringify(state.settings)); } catch (e) { toast('Could not save settings.', 'error'); return; }
+  closeSettings(); toast('API settings saved.', 'ok');
+}
+
+async function testConnection() {
+  const tr = $('#testResult'), ep = ($('#setEndpoint').value || '').trim(), key = ($('#setApiKey').value || '').trim(), model = ($('#setModel').value || '').trim() || 'deepseek-chat';
+  if (!ep) { tr.className = 'text-xs mt-3 font-bold text-rose-600'; tr.textContent = 'Enter an endpoint URL.'; return; }
+  tr.className = 'text-xs mt-3 font-medium text-slate-500'; tr.textContent = 'Testing connection…';
+  try {
+    await callAPIRaw(ep, key, model, [{ role: 'user', content: 'Reply with exactly: OK' }], 16);
+    tr.className = 'text-xs mt-3 font-bold text-emerald-600'; tr.textContent = '✓ Connected successfully!';
+  } catch (e) { tr.className = 'text-xs mt-3 font-bold text-rose-600'; tr.textContent = '✗ ' + e.message; }
+}
+
+/* ================= INIT ================= */
+(function init() {
+  try {
+    if (typeof pdfjsLib !== 'undefined') pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    loadState(); render();
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeSettings(); closeNewProject(); closeManualText(); }
+      if (e.key === 'Enter') {
+        if (!$('#modalNewProject').classList.contains('hidden') && document.activeElement === $('#newProjName')) confirmNewProject();
+        if (!$('#modalSettings').classList.contains('hidden') && document.activeElement === $('#setEndpoint')) saveSettings();
+      }
+    });
+    ['modalSettings', 'modalNewProject', 'modalManualText'].forEach(id => {
+      const el = document.getElementById(id); if (el) el.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
+    });
+  } catch (e) {
+    console.error(e);
+    document.body.innerHTML = `<div class="p-10 text-center text-rose-600 font-bold">Initialization Error: ${e.message}. <button onclick="localStorage.clear(); location.reload();" class="underline text-brand">Reset App</button></div>`;
+  }
+})();
+</script>
+</body>
+</html>
