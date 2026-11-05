@@ -37,7 +37,19 @@
 </head>
 <body class="bg-[#F8FAFC] min-h-screen antialiased text-slate-800 font-sans flex flex-col">
 
-<header class="bg-gradient-to-r from-[#004AAD] to-[#2563EB] text-white sticky top-0 z-40 shadow-lg">
+<div id="lockScreen" class="fixed inset-0 z-[80] bg-gradient-to-br from-[#003B8A] to-[#1E3A8A] flex items-center justify-center p-4">
+  <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-7">
+    <div class="w-12 h-12 rounded-xl bg-brand text-white grid place-items-center font-bold mb-4">QS</div>
+    <h1 class="text-2xl font-bold text-slate-900">Unlock QS SMART AI</h1>
+    <p class="text-sm text-slate-500 mt-2 leading-relaxed">Projects and API settings are encrypted in this browser with your password (local privacy only — not server login). A different password opens a separate empty workspace. Forgot password = data is unrecoverable. Document text is still sent to your chosen AI endpoint when you analyse.</p>
+    <label class="block text-xs font-bold text-slate-700 mt-5 mb-1.5">Workspace password</label>
+    <input id="lockPassword" type="password" autocomplete="current-password" placeholder="At least 4 characters" class="w-full px-4 py-3 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand" onkeydown="if(event.key==='Enter') unlockWithPassword()">
+    <p id="lockError" class="text-xs font-medium text-rose-600 mt-2 min-h-[1rem]"></p>
+    <button id="lockBtn" onclick="unlockWithPassword()" class="w-full mt-3 bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand-dark transition">Unlock</button>
+  </div>
+</div>
+
+<header id="appHeader" class="hidden bg-gradient-to-r from-[#004AAD] to-[#2563EB] text-white sticky top-0 z-40 shadow-lg">
   <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
     <button onclick="goHome()" class="flex items-center gap-3 text-left focus:outline-none shrink-0">
       <span class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm grid place-items-center font-bold text-sm shadow-inner">QS</span>
@@ -54,6 +66,9 @@
       </div>
     </div>
 
+    <button onclick="lockApp()" class="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition backdrop-blur-sm border border-white/10 shrink-0" title="Lock workspace">
+      <span class="font-medium">Lock</span>
+    </button>
     <button onclick="openSettings()" class="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition backdrop-blur-sm border border-white/10 shrink-0" title="API Settings">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span class="hidden sm:inline font-medium">API Settings</span>
@@ -61,7 +76,7 @@
   </div>
 </header>
 
-<main class="flex-1 w-full">
+<main id="appMain" class="hidden flex-1 w-full">
   <section id="view-home" class="max-w-7xl mx-auto px-4 py-8">
     <div class="bg-gradient-to-br from-brand to-[#1E3A8A] rounded-2xl p-8 md:p-12 text-white mb-8 shadow-xl relative overflow-hidden">
       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
@@ -90,7 +105,7 @@
 <div id="modalSettings" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform transition-all">
     <div class="flex items-start justify-between mb-1"><h2 class="text-xl font-bold text-slate-900">API Settings</h2><button onclick="closeSettings()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none -mt-1 focus:outline-none">×</button></div>
-    <p class="text-xs text-slate-500 mb-5">Connect to any OpenAI-compatible endpoint (DeepSeek, Moyu, OpenAI). Your settings and project data are stored locally in this browser. Document text is sent to the configured AI endpoint when you run an analysis.</p>
+    <p class="text-xs text-slate-500 mb-5">Connect to any OpenAI-compatible endpoint (DeepSeek, Moyu, OpenAI). Settings and projects are encrypted in this browser after unlock. This is local privacy, not multi-user server auth. Document text is sent to the AI endpoint you configure when you analyse.</p>
     <div class="space-y-4">
       <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Endpoint URL</label><input id="setEndpoint" type="text" placeholder="https://api.deepseek.com/v1" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
       <div><label class="block text-xs font-bold text-slate-700 mb-1.5">API Key</label><input id="setApiKey" type="password" placeholder="sk-..." class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
@@ -101,7 +116,7 @@
       <button onclick="testConnection()" class="text-sm font-semibold px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-700 hover:bg-slate-50 transition">Test Connection</button>
       <div class="ml-auto flex gap-2"><button onclick="closeSettings()" class="text-sm font-medium px-4 py-2.5 rounded-xl text-slate-500 hover:bg-slate-100 transition">Cancel</button><button onclick="saveSettings()" class="text-sm font-bold px-6 py-2.5 rounded-xl bg-brand text-white hover:bg-brand-dark shadow-md transition">Save</button></div>
     </div>
-    <div class="border-t border-slate-100 mt-6 pt-4 text-center"><button onclick="if(confirm('Erase all projects and settings?')) { localStorage.clear(); location.reload(); }" class="text-[11px] text-rose-500 hover:underline">Reset App Data</button></div>
+    <div class="border-t border-slate-100 mt-6 pt-4 text-center"><button onclick="resetCurrentVault()" class="text-[11px] text-rose-500 hover:underline">Erase this workspace</button></div>
   </div>
 </div>
 
@@ -136,6 +151,13 @@ window.onerror = function(msg, url, lineNo, columnNo, error) {
 
 const LS_PROJECTS = 'qssmart_projects_v1';
 const LS_SETTINGS = 'qssmart_settings_v1';
+
+let cryptoKey = null;
+let vaultSalt = null;
+let vaultStorageKey = null;
+let pendingSave = Promise.resolve();
+const textEnc = new TextEncoder();
+const textDec = new TextDecoder();
 
 const state = {
   projects: [],
@@ -218,18 +240,26 @@ function fmtBytes(n) {
   return (n / 1048576).toFixed(1) + ' MB';
 }
 
-/* Only sum amounts that explicitly state HKD or HK$.
-   Ambiguous currencies and ranges are intentionally excluded. */
-function parseHkdAmount(amount) {
-  const value = String(amount || '').trim();
-  if (!value || /\b(?:to|through|million|thousand)\b|[–—]/i.test(value)) return null;
+/* Show a numeric contract sum. Drop words-in-full and broken OCR fragments. */
+function formatContractSum(raw) {
+  const text = String(raw || '').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+  const formatted = [...text.matchAll(/(?:HK\$|HKD|\$)\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.\d{1,2})?)/gi)];
+  const plain = [...text.matchAll(/(?:HK\$|HKD|\$)?\s*([0-9]{1,3}(?:,[0-9]{3})+(?:\.\d{1,2})?|\d{4,12}(?:\.\d{1,2})?)/g)];
+  const pick = (formatted[0] && formatted[0][1]) || (plain[0] && plain[0][1]);
+  if (!pick) return '';
+  const value = Number(pick.replace(/,/g, ''));
+  if (!Number.isFinite(value) || value <= 0 || value >= 1e12) return '';
+  return 'HK$' + value.toLocaleString('en-HK', { maximumFractionDigits: 2 });
+}
 
-  const matches = [...value.matchAll(/(?:HKD|HK\$)\s*([0-9][\d,]*(?:\.\d+)?)|([0-9][\d,]*(?:\.\d+)?)\s*(?:HKD|HK\$)/gi)];
-  if (matches.length !== 1) return null;
-
-  const numberText = matches[0][1] || matches[0][2];
-  const parsed = Number(numberText.replace(/,/g, ''));
-  return Number.isFinite(parsed) ? parsed : null;
+function voAmountLabel(vo) {
+  const parts = [];
+  if (vo.nett) parts.push('Nett ' + vo.nett);
+  if (vo.additions) parts.push('Additions ' + vo.additions);
+  if (vo.omissions) parts.push('Omissions ' + vo.omissions);
+  if (parts.length) return parts.join('; ');
+  return vo.amount || '';
 }
 
 function badge(label, cls) {
@@ -266,18 +296,195 @@ function toast(msg, type = 'info') {
 }
 
 function loadState() {
-  try { state.projects = JSON.parse(localStorage.getItem(LS_PROJECTS) || '[]'); } catch (e) {}
+  /* Data is loaded only after the workspace password unlocks the encrypted vault. */
+}
+
+const LEGACY_KEYS = [LS_PROJECTS, LS_SETTINGS];
+
+function hasLegacyData() {
+  return LEGACY_KEYS.some(key => {
+    const value = localStorage.getItem(key);
+    return value && value !== '[]' && value !== '{}';
+  });
+}
+
+function readLegacySnapshot() {
+  let projects = [];
+  let settings = { endpoint: '', apiKey: '', model: 'deepseek-chat' };
   try {
-    state.settings = Object.assign(
-      { endpoint: '', apiKey: '', model: 'deepseek-chat' },
-      JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}')
-    );
+    const rawProjects = localStorage.getItem(LS_PROJECTS);
+    if (rawProjects) {
+      const parsed = JSON.parse(rawProjects);
+      if (Array.isArray(parsed)) projects = parsed;
+    }
   } catch (e) {}
+  try {
+    const rawSettings = localStorage.getItem(LS_SETTINGS);
+    if (rawSettings) {
+      settings = Object.assign(settings, JSON.parse(rawSettings) || {});
+    }
+  } catch (e) {}
+  return { projects, settings };
+}
+
+function clearLegacyStorage() {
+  for (const key of LEGACY_KEYS) {
+    try { localStorage.removeItem(key); } catch (e) {}
+  }
+}
+
+function b64(buf) {
+  const bytes = buf instanceof Uint8Array ? buf : new Uint8Array(buf);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function fromB64(value) {
+  const binary = atob(value);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) out[i] = binary.charCodeAt(i);
+  return out;
+}
+
+async function sha256hex(text) {
+  const hash = await crypto.subtle.digest('SHA-256', textEnc.encode(text));
+  return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function deriveKey(password, salt) {
+  const material = await crypto.subtle.importKey('raw', textEnc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt, iterations: 120000, hash: 'SHA-256' },
+    material,
+    { name: 'AES-GCM', length: 256 },
+    false,
+    ['encrypt', 'decrypt']
+  );
+}
+
+async function encryptPayload(key, obj) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, textEnc.encode(JSON.stringify(obj)));
+  return { iv: b64(iv), ct: b64(ct) };
+}
+
+async function decryptPayload(key, stored) {
+  const parsed = typeof stored === 'string' ? JSON.parse(stored) : stored;
+  const plain = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv: fromB64(parsed.iv) },
+    key,
+    fromB64(parsed.ct)
+  );
+  return JSON.parse(textDec.decode(plain));
+}
+
+async function unlockWithPassword() {
+  const password = $('#lockPassword').value || '';
+  const errorEl = $('#lockError');
+  const button = $('#lockBtn');
+  errorEl.textContent = '';
+  if (password.length < 4) {
+    errorEl.textContent = 'Use at least 4 characters.';
+    return;
+  }
+  button.disabled = true;
+  button.textContent = 'Unlocking…';
+  try {
+    const id = 'qssmart_vault_' + (await sha256hex(password)).slice(0, 24);
+    const existing = localStorage.getItem(id);
+    const created = !existing;
+    const salt = existing ? fromB64(JSON.parse(existing).salt) : crypto.getRandomValues(new Uint8Array(16));
+    const key = await deriveKey(password, salt);
+    let data = existing
+      ? await decryptPayload(key, existing)
+      : { projects: [], settings: { endpoint: '', apiKey: '', model: 'deepseek-chat' } };
+    let migrated = false;
+    // Migrate plaintext data from older app versions into this vault, then wipe it.
+    if (hasLegacyData()) {
+      const legacy = readLegacySnapshot();
+      const vaultEmpty = !(Array.isArray(data.projects) && data.projects.length) &&
+        !(data.settings && (data.settings.endpoint || data.settings.apiKey));
+      if (vaultEmpty && (legacy.projects.length || legacy.settings.endpoint || legacy.settings.apiKey)) {
+        data = {
+          projects: legacy.projects,
+          settings: Object.assign({ endpoint: '', apiKey: '', model: 'deepseek-chat' }, legacy.settings)
+        };
+        migrated = true;
+      }
+      clearLegacyStorage();
+    }
+    cryptoKey = key;
+    vaultSalt = salt;
+    vaultStorageKey = id;
+    state.projects = Array.isArray(data.projects) ? data.projects : [];
+    state.settings = Object.assign({ endpoint: '', apiKey: '', model: 'deepseek-chat' }, data.settings || {});
+    state.currentId = null;
+    if (migrated || created) {
+      saveProjects();
+    }
+    $('#lockScreen').classList.add('hidden');
+    $('#appHeader').classList.remove('hidden');
+    $('#appMain').classList.remove('hidden');
+    render();
+    if (migrated) {
+      toast('Migrated older unencrypted data into this locked workspace and removed plaintext copies.', 'ok');
+    } else if (created) {
+      toast('New private workspace created. Reuse this exact password to open it again.', 'ok');
+    }
+  } catch (error) {
+    console.error(error);
+    errorEl.textContent = 'Could not open this workspace.';
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Unlock';
+  }
+}
+
+function lockApp() {
+  cryptoKey = null;
+  vaultSalt = null;
+  vaultStorageKey = null;
+  state.projects = [];
+  state.settings = { endpoint: '', apiKey: '', model: 'deepseek-chat' };
+  state.currentId = null;
+  state.searchQuery = '';
+  $('#lockPassword').value = '';
+  $('#lockError').textContent = '';
+  closeSettings();
+  closeNewProject();
+  closeManualText();
+  $('#appHeader').classList.add('hidden');
+  $('#appMain').classList.add('hidden');
+  $('#lockScreen').classList.remove('hidden');
+  setTimeout(() => $('#lockPassword').focus(), 50);
+}
+
+function resetCurrentVault() {
+  if (!confirm('Erase projects and API settings for this password, and wipe any leftover unencrypted data from older versions? This cannot be undone.')) return;
+  state.projects = [];
+  state.settings = { endpoint: '', apiKey: '', model: 'deepseek-chat' };
+  state.currentId = null;
+  clearLegacyStorage();
+  if (vaultStorageKey) {
+    try { localStorage.removeItem(vaultStorageKey); } catch (e) {}
+  }
+  saveProjects();
+  closeSettings();
+  render();
+  toast('This workspace and any legacy plaintext data were cleared.', 'ok');
 }
 
 function saveProjects() {
-  try { localStorage.setItem(LS_PROJECTS, JSON.stringify(state.projects)); }
-  catch (e) { toast('Storage limit reached — some data was not saved.', 'warn'); }
+  if (!cryptoKey || !vaultStorageKey || !vaultSalt) return;
+  const snapshot = { projects: state.projects, settings: state.settings };
+  const key = cryptoKey;
+  const salt = vaultSalt;
+  const storageKey = vaultStorageKey;
+  pendingSave = pendingSave.catch(() => {}).then(async () => {
+    const encrypted = await encryptPayload(key, snapshot);
+    localStorage.setItem(storageKey, JSON.stringify({ salt: b64(salt), iv: encrypted.iv, ct: encrypted.ct }));
+  }).catch(() => toast('Storage limit reached — some data was not saved.', 'warn'));
 }
 
 function currentProject() {
@@ -322,21 +529,9 @@ function renderHome() {
     const voCount = vos.length;
     const overdueCount = vos.filter(vo => String(vo.sop_check || '').toLowerCase().includes('overdue')).length;
 
-    let hkdTotal = 0;
-    let hkdAmountCount = 0;
-    for (const vo of vos) {
-      const parsed = parseHkdAmount(vo.amount);
-      if (parsed !== null) {
-        hkdTotal += parsed;
-        hkdAmountCount++;
-      }
-    }
-
     const summary = p.analysis?.project_overview || {};
     const updatedAt = p.updatedAt || p.createdAt || Date.now();
-    const totalLabel = hkdAmountCount
-      ? `HKD ${hkdTotal.toLocaleString('en-HK', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
-      : 'HKD —';
+    const sumLabel = formatContractSum(summary.contract_sum);
 
     return `
     <div class="group relative bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-xl hover:border-brand/40 transition-all duration-200 cursor-pointer flex flex-col h-full" onclick="openProject('${esc(p.id)}')">
@@ -355,10 +550,10 @@ function renderHome() {
         <div class="flex flex-wrap gap-2 mt-2 mb-4 text-[11px] font-bold">
           <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200">${(p.files || []).length} Files</span>
           <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-200">${voCount} VOs</span>
-          <span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md border border-emerald-200" title="Sum of VO amounts explicitly identified as HKD">${totalLabel}</span>
+          ${sumLabel ? `<span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md border border-emerald-200">${esc(sumLabel)}</span>` : ''}
           ${overdueCount > 0 ? `<span class="bg-rose-50 text-rose-700 px-2 py-1 rounded-md border border-rose-200">${overdueCount} Overdue</span>` : ''}
         </div>
-        <p class="text-xs text-slate-500 mb-4 line-clamp-2">${esc(summary.duration || 'Duration not found')} · ${esc(summary.contract_sum || 'Contract sum not found')}</p>
+        <p class="text-xs text-slate-500 mb-4 line-clamp-2">${esc(summary.duration || 'Duration not found')} · ${esc(sumLabel || 'Contract sum not found')}</p>
       ` : `<p class="text-sm text-slate-500 mb-4 flex-1">${(p.files || []).length} file(s) · Not analyzed</p>`}
 
       <div class="flex items-center justify-between text-[11px] font-medium text-slate-400 pt-4 border-t border-slate-100 mt-auto">
@@ -483,7 +678,7 @@ function panelOverview(p) {
       </div>
       <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Contract Sum</div>
-        <div class="font-bold text-brand text-lg">${hl(ov.contract_sum) || '—'}</div>
+        <div class="font-bold text-brand text-lg">${hl(formatContractSum(ov.contract_sum)) || '—'}</div>
       </div>
       <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Duration / Ongoing Period</div>
@@ -498,7 +693,7 @@ function panelOverview(p) {
     <div class="mt-8 bg-blue-50 rounded-xl p-5 border border-blue-100">
       <h3 class="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">AI Analysis Note</h3>
       <p class="text-xs text-blue-800 leading-relaxed">
-        This summary is extracted from the uploaded files and may contain errors or omissions. If fields show "—", the information was not found in the extracted text. Please verify all results against the original documents. This tool is an aid and is not legal advice.
+        AI provides source-grounded QS decision support only. Final contractual, commercial and legal decisions remain subject to professional review. If a field shows "—", it was not found as a clean figure in the extracted text. Please verify all results against the original documents. This tool is not legal advice.
       </p>
     </div>
   </div>`;
@@ -531,7 +726,7 @@ function fileRow(f, aiDoc) {
     ` : ''}
     ${aiDoc && aiDoc.summary ? `
       <div class="mt-2 bg-slate-50/80 rounded-lg p-3 border border-slate-100">
-        <div class="text-[10px] font-bold text-brand mb-1">AI Reading Summary</div>
+        <div class="text-[10px] font-bold text-brand mb-1">QS Reading Summary</div>
         <p class="text-xs text-slate-600 leading-relaxed">${hl(aiDoc.summary)}</p>
       </div>
     ` : ''}
@@ -694,11 +889,11 @@ function panelOrganizer(p) {
       <summary class="flex items-center gap-4 p-5 cursor-pointer select-none hover:bg-slate-50 transition">
         <span class="chev text-slate-300 transition-transform text-xs group-hover:text-brand">▶</span>
         <span class="font-bold text-base text-slate-800">${hl(vo.vo_number || ('VO ' + (i + 1)))}</span>
-        <span class="ml-auto text-base font-bold text-brand whitespace-nowrap">${hl(vo.amount || '—')}</span>
+        <span class="ml-auto text-base font-bold text-brand whitespace-nowrap text-right">${hl(voAmountLabel(vo) || '—')}</span>
         ${badge(status.label, status.cls)}
       </summary>
       <div class="border-t border-slate-100 p-5 grid sm:grid-cols-4 gap-6 bg-slate-50/50 text-sm">
-        <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Amount</div><div class="font-bold text-slate-800">${hl(vo.amount || '—')}</div></div>
+        <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Amount</div><div class="font-bold text-slate-800">${hl(voAmountLabel(vo) || '—')}</div></div>
         <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Issued</div><div class="font-medium text-slate-800">${fmtDate(vo.date_issued)}</div></div>
         <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Submitted</div><div class="font-medium text-slate-800">${fmtDate(vo.date_submitted)}</div></div>
         <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Source</div><div class="font-medium text-slate-800">${hl(vo.source_file || '—')} p.${hl(vo.page || '—')}</div></div>
@@ -720,7 +915,7 @@ function panelCheck(p) {
 
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm h-fit">
       <h2 class="text-lg font-bold text-slate-800">Cap. 652 Timeline Calculator</h2>
-      <p class="text-xs text-slate-500 mt-1">Indicative only; confirm the applicable response period and deadline.</p>
+      <p class="text-xs text-slate-500 mt-1">Indicative only; confirm the applicable response period and deadline. AI provides source-grounded QS decision support only. Final contractual, commercial and legal decisions remain subject to professional review.</p>
       <div class="space-y-4 my-5">
         <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Payment claim date</label><input id="calcClaimDate" type="date" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 transition"></div>
         <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Response period (days)</label><input id="calcPeriod" type="number" min="1" value="30" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 transition"></div>
@@ -952,20 +1147,22 @@ CRITICAL RULES:
 2. Provide citations for each extracted item where applicable: exact source_file, page number from [Page X] markers, and a title or clause reference.
 3. Return raw JSON only. Do not include markdown or explanations.
 4. For VO or Architect's Instruction dates, prefer the date printed on the actual VO/AI document over any later assessment or valuation date.
-5. For amounts, preserve the currency exactly as written. Do not assume an amount is HKD unless the source explicitly identifies it as HKD or HK$.
+5. contract_sum must be a number only, for example HK$16,180,000. Never use words such as "Sixteen Million" and never include OCR fragments.
+6. For each source file, write its own document summary. Include the document date, omissions, additions, nett, and any star-rate or discount-factor remark when that file states them. Do not copy one file's summary onto another file.
+7. For each VO or AI valuation, fill additions, omissions and nett separately when the text states them, and also put a combined amount string: "Nett HK$…; Additions HK$…; Omissions HK$…".
 
 REQUIRED JSON SCHEMA:
 {
   "project_overview": {
     "project_name": "string",
-    "contract_sum": "string (preserve currency as written)",
+    "contract_sum": "HK$0.00",
     "duration": "string (e.g. 730 days)",
     "commencement_date": "YYYY-MM-DD"
   },
-  "documents": [{"name": "string", "type": "GCC | SCC | VO | AI | Other", "summary": "string"}],
+  "documents": [{"name": "string", "type": "GCC | SCC | VO | AI | Other", "summary": "string including date, omissions, additions, nett and discount remarks when present"}],
   "key_dates": [{"date": "YYYY-MM-DD", "event": "string", "source_file": "string", "page": "string", "title": "string"}],
   "key_clauses": [{"clause": "string", "text": "string", "impact": "string", "source_file": "string", "page": "string", "title": "string"}],
-  "vo_details": [{"vo_number": "string", "amount": "string (preserve currency as written)", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
+  "vo_details": [{"vo_number": "string", "amount": "Nett HK$0; Additions HK$0; Omissions HK$0", "additions": "string", "omissions": "string", "nett": "string", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
   "scc_gcc_mapping": [{"scc_ref": "string", "gcc_ref": "string", "change": "string", "source_file": "string"}]
 }`;
 
@@ -1116,6 +1313,10 @@ async function analyzeProject() {
       throw new Error('All chunks failed. Check your API settings and try again.');
     }
 
+    if (finalResult.project_overview && finalResult.project_overview.contract_sum) {
+      finalResult.project_overview.contract_sum = formatContractSum(finalResult.project_overview.contract_sum);
+    }
+
     p.analysis = finalResult;
     p.analyzedAt = Date.now();
     touch(p);
@@ -1156,8 +1357,8 @@ function saveSettings() {
   };
 
   try {
-    localStorage.setItem(LS_SETTINGS, JSON.stringify(nextSettings));
     state.settings = nextSettings;
+    saveProjects();
   } catch (error) {
     toast('Could not save settings.', 'error');
     return;
@@ -1201,7 +1402,7 @@ async function testConnection() {
     }
 
     loadState();
-    render();
+    setTimeout(() => $('#lockPassword')?.focus(), 50);
 
     document.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
