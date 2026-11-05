@@ -254,9 +254,8 @@ function formatContractSum(raw) {
 }
 
 function voAmountLabel(vo) {
-  const net = vo.net || vo.nett;
   const parts = [];
-  if (net) parts.push('Net ' + net);
+  if (vo.nett) parts.push('Nett ' + vo.nett);
   if (vo.additions) parts.push('Additions ' + vo.additions);
   if (vo.omissions) parts.push('Omissions ' + vo.omissions);
   if (parts.length) return parts.join('; ');
@@ -1149,8 +1148,8 @@ CRITICAL RULES:
 3. Return raw JSON only. Do not include markdown or explanations.
 4. For VO or Architect's Instruction dates, prefer the date printed on the actual VO/AI document over any later assessment or valuation date.
 5. contract_sum must be a number only, for example HK$16,180,000. Never use words such as "Sixteen Million" and never include OCR fragments.
-6. For each source file, write its own document summary. Include the document date, omissions, additions, net, and any star-rate or discount-factor remark when that file states them. Do not copy one file's summary onto another file.
-7. For each VO or AI valuation, fill additions, omissions and net separately when the text states them, and also put a combined amount string: "Net HK$…; Additions HK$…; Omissions HK$…".
+6. For each source file, write its own document summary. Include the document date, omissions, additions, nett, and any star-rate or discount-factor remark when that file states them. Do not copy one file's summary onto another file.
+7. For each VO or AI valuation, fill additions, omissions and nett separately when the text states them, and also put a combined amount string: "Nett HK$…; Additions HK$…; Omissions HK$…".
 
 REQUIRED JSON SCHEMA:
 {
@@ -1160,10 +1159,10 @@ REQUIRED JSON SCHEMA:
     "duration": "string (e.g. 730 days)",
     "commencement_date": "YYYY-MM-DD"
   },
-  "documents": [{"name": "string", "type": "GCC | SCC | VO | AI | Other", "summary": "string including date, omissions, additions, net and discount remarks when present"}],
+  "documents": [{"name": "string", "type": "GCC | SCC | VO | AI | Other", "summary": "string including date, omissions, additions, nett and discount remarks when present"}],
   "key_dates": [{"date": "YYYY-MM-DD", "event": "string", "source_file": "string", "page": "string", "title": "string"}],
   "key_clauses": [{"clause": "string", "text": "string", "impact": "string", "source_file": "string", "page": "string", "title": "string"}],
-  "vo_details": [{"vo_number": "string", "amount": "Net HK$0; Additions HK$0; Omissions HK$0", "additions": "string", "omissions": "string", "net": "string", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
+  "vo_details": [{"vo_number": "string", "amount": "Nett HK$0; Additions HK$0; Omissions HK$0", "additions": "string", "omissions": "string", "nett": "string", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
   "scc_gcc_mapping": [{"scc_ref": "string", "gcc_ref": "string", "change": "string", "source_file": "string"}]
 }`;
 
