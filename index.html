@@ -37,7 +37,6 @@
 </head>
 <body class="bg-[#F8FAFC] min-h-screen antialiased text-slate-800 font-sans flex flex-col">
 
-<!-- ============ GLOBAL HEADER ============ -->
 <header class="bg-gradient-to-r from-[#004AAD] to-[#2563EB] text-white sticky top-0 z-40 shadow-lg">
   <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
     <button onclick="goHome()" class="flex items-center gap-3 text-left focus:outline-none shrink-0">
@@ -47,8 +46,7 @@
         <span class="block text-[10px] text-blue-200 uppercase tracking-widest font-semibold">by quantify team</span>
       </span>
     </button>
-    
-    <!-- Global Search Box -->
+
     <div id="searchContainer" class="hidden flex-1 max-w-md mx-auto relative">
       <div class="relative">
         <input id="globalSearch" type="text" placeholder="Search dates, amounts, clauses..." oninput="handleSearch(this.value)" class="w-full bg-white/10 border border-white/20 text-white placeholder-white/60 px-4 py-2 pl-10 rounded-xl text-sm focus:outline-none focus:bg-white focus:text-slate-900 focus:placeholder-slate-400 transition-all">
@@ -64,13 +62,12 @@
 </header>
 
 <main class="flex-1 w-full">
-  <!-- ============ VIEW: HOME ============ -->
   <section id="view-home" class="max-w-7xl mx-auto px-4 py-8">
     <div class="bg-gradient-to-br from-brand to-[#1E3A8A] rounded-2xl p-8 md:p-12 text-white mb-8 shadow-xl relative overflow-hidden">
       <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
       <div class="relative z-10 md:w-2/3">
         <h1 class="text-3xl md:text-4xl font-bold mb-3 tracking-tight">Streamline your Contract Analysis</h1>
-        <p class="text-blue-100 mb-6 text-sm md:text-base leading-relaxed max-w-xl">Upload your GCC, SCC, and VO documents. Our 60-year HK QS AI expert will extract key dates, clauses, and verify Security of Payment (Cap. 652) compliance.</p>
+        <p class="text-blue-100 mb-6 text-sm md:text-base leading-relaxed max-w-xl">Upload your GCC, SCC, and VO documents. Our Hong Kong-focused QS AI assistant helps extract key dates and clauses and flag potential Security of Payment (Cap. 652) issues. Please verify results against the original documents.</p>
         <button onclick="openNewProject()" class="bg-white text-brand font-bold px-6 py-3 rounded-xl hover:bg-blue-50 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">+ Create New Project</button>
       </div>
     </div>
@@ -78,7 +75,6 @@
     <div id="projectGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
   </section>
 
-  <!-- ============ VIEW: WORKSPACE ============ -->
   <section id="view-workspace" class="hidden max-w-7xl mx-auto px-4 py-6">
     <div class="flex items-center gap-4 mb-6 flex-wrap">
       <button onclick="goHome()" class="flex items-center gap-2 text-sm text-slate-600 hover:text-brand bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm transition hover:bg-slate-50">
@@ -91,11 +87,10 @@
   </section>
 </main>
 
-<!-- ============ MODALS ============ -->
 <div id="modalSettings" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
   <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 transform transition-all">
     <div class="flex items-start justify-between mb-1"><h2 class="text-xl font-bold text-slate-900">API Settings</h2><button onclick="closeSettings()" class="text-slate-400 hover:text-slate-700 text-2xl leading-none -mt-1 focus:outline-none">×</button></div>
-    <p class="text-xs text-slate-500 mb-5">Connect to any OpenAI-compatible endpoint (DeepSeek, Moyu, OpenAI). Data is stored locally in your browser.</p>
+    <p class="text-xs text-slate-500 mb-5">Connect to any OpenAI-compatible endpoint (DeepSeek, Moyu, OpenAI). Your settings and project data are stored locally in this browser. Document text is sent to the configured AI endpoint when you run an analysis.</p>
     <div class="space-y-4">
       <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Endpoint URL</label><input id="setEndpoint" type="text" placeholder="https://api.deepseek.com/v1" class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
       <div><label class="block text-xs font-bold text-slate-700 mb-1.5">API Key</label><input id="setApiKey" type="password" placeholder="sk-..." class="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
@@ -156,30 +151,30 @@ const state = {
 };
 
 const TABS = [
-  { key: 'overview',  label: '1. Project Overview' },
-  { key: 'doc',       label: '2. Documents & OCR' },
-  { key: 'dates',     label: '3. Key Dates & Clauses' },
-  { key: 'timer',     label: '4. VO & SOP Timer' },
+  { key: 'overview', label: '1. Project Overview' },
+  { key: 'doc', label: '2. Documents & OCR' },
+  { key: 'dates', label: '3. Key Dates & Clauses' },
+  { key: 'timer', label: '4. VO & SOP Timer' },
   { key: 'organizer', label: '5. VO Organizer' },
-  { key: 'check',     label: '6. GCC/SCC & Calculator' }
+  { key: 'check', label: '6. GCC/SCC & Calculator' }
 ];
 
 const TYPE_COLORS = {
   GCC: 'bg-blue-100 text-blue-700 border border-blue-200',
   SCC: 'bg-indigo-100 text-indigo-700 border border-indigo-200',
-  VO:  'bg-amber-100 text-amber-700 border border-amber-200',
-  AI:  'bg-purple-100 text-purple-700 border border-purple-200',
+  VO: 'bg-amber-100 text-amber-700 border border-amber-200',
+  AI: 'bg-purple-100 text-purple-700 border border-purple-200',
   Other: 'bg-slate-100 text-slate-600 border border-slate-200'
 };
 
-const $  = (s, r = document) => r.querySelector(s);
+const $ = (s, r = document) => r.querySelector(s);
 const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
+
 function esc(str) {
   if (str === null || str === undefined) return '';
   return String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
 }
 
-// Helper to highlight search terms
 function hl(str) {
   const safeStr = esc(str || '');
   if (!state.searchQuery) return safeStr;
@@ -187,7 +182,6 @@ function hl(str) {
   return safeStr.replace(regex, '<mark>$1</mark>');
 }
 
-// ========== HONG KONG TIMEZONE FIX ==========
 function fmtDate(s) {
   if (!s) return '—';
   const d = new Date(s);
@@ -206,7 +200,6 @@ function parseDate(s) {
   return isNaN(d) ? null : d;
 }
 
-// Returns timestamp of today at 00:00 in Hong Kong time
 function todayHK() {
   const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Hong_Kong',
@@ -214,19 +207,41 @@ function todayHK() {
     month: '2-digit',
     day: '2-digit'
   });
-  const hkDateStr = formatter.format(new Date()); // YYYY-MM-DD
+  const hkDateStr = formatter.format(new Date());
   return new Date(hkDateStr + 'T00:00:00+08:00').getTime();
 }
-// ========== END HONG KONG TIMEZONE FIX ==========
 
 function fmtBytes(n) {
   if (!n && n !== 0) return '';
-  if (n < 1024) return n + ' B'; if (n < 1048576) return (n / 1024).toFixed(1) + ' KB'; return (n / 1048576).toFixed(1) + ' MB';
+  if (n < 1024) return n + ' B';
+  if (n < 1048576) return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1048576).toFixed(1) + ' MB';
 }
+
+/* Only sum amounts that explicitly state HKD or HK$.
+   Ambiguous currencies and ranges are intentionally excluded. */
+function parseHkdAmount(amount) {
+  const value = String(amount || '').trim();
+  if (!value || /\b(?:to|through|million|thousand)\b|[–—]/i.test(value)) return null;
+
+  const matches = [...value.matchAll(/(?:HKD|HK\$)\s*([0-9][\d,]*(?:\.\d+)?)|([0-9][\d,]*(?:\.\d+)?)\s*(?:HKD|HK\$)/gi)];
+  if (matches.length !== 1) return null;
+
+  const numberText = matches[0][1] || matches[0][2];
+  const parsed = Number(numberText.replace(/,/g, ''));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function badge(label, cls) {
-  const map = { emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200', rose: 'bg-rose-100 text-rose-700 border-rose-200', amber: 'bg-amber-100 text-amber-700 border-amber-200', slate: 'bg-slate-100 text-slate-600 border-slate-200' };
+  const map = {
+    emerald: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    rose: 'bg-rose-100 text-rose-700 border-rose-200',
+    amber: 'bg-amber-100 text-amber-700 border-amber-200',
+    slate: 'bg-slate-100 text-slate-600 border-slate-200'
+  };
   return `<span class="inline-flex items-center justify-center text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${map[cls] || map.slate}">${esc(label)}</span>`;
 }
+
 function emptyState(iconSvg, title, sub, actionHtml = '') {
   return `<div class="flex flex-col items-center justify-center py-12 px-4 text-center">
     <div class="w-16 h-16 mb-4 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">${iconSvg}</div>
@@ -244,19 +259,34 @@ function toast(msg, type = 'info') {
   el.textContent = msg;
   el.classList.remove('hidden');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.classList.add('translate-y-4', 'opacity-0'); setTimeout(() => el.classList.add('hidden'), 300); }, 4000);
+  toastTimer = setTimeout(() => {
+    el.classList.add('translate-y-4', 'opacity-0');
+    setTimeout(() => el.classList.add('hidden'), 300);
+  }, 4000);
 }
 
 function loadState() {
   try { state.projects = JSON.parse(localStorage.getItem(LS_PROJECTS) || '[]'); } catch (e) {}
-  try { state.settings = Object.assign({ endpoint: '', apiKey: '', model: 'deepseek-chat' }, JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}')); } catch (e) {}
+  try {
+    state.settings = Object.assign(
+      { endpoint: '', apiKey: '', model: 'deepseek-chat' },
+      JSON.parse(localStorage.getItem(LS_SETTINGS) || '{}')
+    );
+  } catch (e) {}
 }
+
 function saveProjects() {
-  try { localStorage.setItem(LS_PROJECTS, JSON.stringify(state.projects)); } 
+  try { localStorage.setItem(LS_PROJECTS, JSON.stringify(state.projects)); }
   catch (e) { toast('Storage limit reached — some data was not saved.', 'warn'); }
 }
-function currentProject() { return state.projects.find(p => p.id === state.currentId) || null; }
-function touch(p) { p.updatedAt = Date.now(); }
+
+function currentProject() {
+  return state.projects.find(p => p.id === state.currentId) || null;
+}
+
+function touch(p) {
+  p.updatedAt = Date.now();
+}
 
 function render() {
   if (state.currentId) {
@@ -281,58 +311,137 @@ function handleSearch(val) {
 function renderHome() {
   const grid = $('#projectGrid');
   if (!state.projects.length) {
-    grid.innerHTML = emptyState('📁', 'No projects yet', 'Create your first project to start analyzing contracts.');
+    grid.innerHTML = `<div class="col-span-full bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12">
+      ${emptyState('📂', 'No projects yet', 'Create your first project to start analysing contracts.', '<button onclick="openNewProject()" class="bg-brand text-white font-bold px-6 py-2.5 rounded-xl hover:bg-brand-dark transition shadow-md">+ Create New Project</button>')}
+    </div>`;
     return;
   }
-  grid.innerHTML = state.projects.slice().sort((a,b) => b.updatedAt - a.updatedAt).map(p => `
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition cursor-pointer group" onclick="openProject('${p.id}')">
-      <div class="p-5">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <h3 class="font-bold text-slate-900 truncate group-hover:text-brand transition">${esc(p.name)}</h3>
-            <p class="text-xs text-slate-500 mt-1">${p.files?.length || 0} file(s) · Updated ${fmtDate(new Date(p.updatedAt).toISOString().slice(0,10))}</p>
-          </div>
-          <button onclick="event.stopPropagation(); deleteProject(event, '${p.id}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 transition p-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-          </button>
+
+  grid.innerHTML = state.projects.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).map(p => {
+    const vos = p.analysis?.vo_details || [];
+    const voCount = vos.length;
+    const overdueCount = vos.filter(vo => String(vo.sop_check || '').toLowerCase().includes('overdue')).length;
+
+    let hkdTotal = 0;
+    let hkdAmountCount = 0;
+    for (const vo of vos) {
+      const parsed = parseHkdAmount(vo.amount);
+      if (parsed !== null) {
+        hkdTotal += parsed;
+        hkdAmountCount++;
+      }
+    }
+
+    const summary = p.analysis?.project_overview || {};
+    const updatedAt = p.updatedAt || p.createdAt || Date.now();
+    const totalLabel = hkdAmountCount
+      ? `HKD ${hkdTotal.toLocaleString('en-HK', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+      : 'HKD —';
+
+    return `
+    <div class="group relative bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-xl hover:border-brand/40 transition-all duration-200 cursor-pointer flex flex-col h-full" onclick="openProject('${esc(p.id)}')">
+      <div class="flex items-start justify-between mb-4">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-light to-blue-100 grid place-items-center text-brand font-bold text-lg shadow-sm border border-blue-200/50">
+          ${esc((p.name || 'P').replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase() || 'QS')}
         </div>
-        ${p.analyzedAt ? `<div class="mt-3 text-[11px] font-medium text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg inline-block">Analyzed ${fmtDate(new Date(p.analyzedAt).toISOString().slice(0,10))}</div>` : `<div class="mt-3 text-[11px] font-medium text-slate-400 bg-slate-50 px-2 py-1 rounded-lg inline-block">Not analyzed</div>`}
+        <button onclick="deleteProject(event,'${esc(p.id)}')" class="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-600 transition p-2 rounded-lg hover:bg-rose-50" title="Delete project">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
       </div>
-    </div>
-  `).join('');
+
+      <h3 class="font-bold text-lg text-slate-900 truncate mb-1">${esc(p.name)}</h3>
+
+      ${p.analysis ? `
+        <div class="flex flex-wrap gap-2 mt-2 mb-4 text-[11px] font-bold">
+          <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-md border border-slate-200">${(p.files || []).length} Files</span>
+          <span class="bg-blue-50 text-blue-700 px-2 py-1 rounded-md border border-blue-200">${voCount} VOs</span>
+          <span class="bg-emerald-50 text-emerald-700 px-2 py-1 rounded-md border border-emerald-200" title="Sum of VO amounts explicitly identified as HKD">${totalLabel}</span>
+          ${overdueCount > 0 ? `<span class="bg-rose-50 text-rose-700 px-2 py-1 rounded-md border border-rose-200">${overdueCount} Overdue</span>` : ''}
+        </div>
+        <p class="text-xs text-slate-500 mb-4 line-clamp-2">${esc(summary.duration || 'Duration not found')} · ${esc(summary.contract_sum || 'Contract sum not found')}</p>
+      ` : `<p class="text-sm text-slate-500 mb-4 flex-1">${(p.files || []).length} file(s) · Not analyzed</p>`}
+
+      <div class="flex items-center justify-between text-[11px] font-medium text-slate-400 pt-4 border-t border-slate-100 mt-auto">
+        <span>Updated ${new Date(updatedAt).toLocaleDateString('en-GB', { timeZone: 'Asia/Hong_Kong' })}</span>
+        <span class="text-brand flex items-center gap-1 group-hover:translate-x-1 transition-transform">Open &rarr;</span>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderWorkspace() {
-  const p = currentProject(); if (!p) return goHome();
+  const p = currentProject();
+  if (!p) {
+    state.currentId = null;
+    render();
+    return;
+  }
+
   $('#projTitle').textContent = p.name;
-  $('#projMeta').textContent = `${p.files?.length || 0} file(s) · ${p.analyzedAt ? 'Analyzed ' + fmtDate(new Date(p.analyzedAt).toISOString().slice(0,10)) : 'Not analyzed'}`;
-  
+  $('#projMeta').textContent = `${(p.files || []).length} file(s) · ` +
+    (p.analysis ? 'Analyzed ' + new Date(p.analyzedAt || p.updatedAt).toLocaleString('en-GB', { timeZone: 'Asia/Hong_Kong' }) : 'Not analyzed yet');
+
   $('#tabBar').innerHTML = TABS.map(t => `
-    <button onclick="switchTab('${t.key}')" class="px-4 py-2.5 text-sm font-semibold rounded-t-xl transition whitespace-nowrap ${state.tab === t.key ? 'bg-white text-brand border border-b-white border-slate-200 -mb-px' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}">${t.label}</button>
+    <button onclick="switchTab('${t.key}')" class="whitespace-nowrap px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${state.tab === t.key ? 'bg-brand text-white shadow-md shadow-brand/20 scale-[1.02]' : 'text-slate-600 hover:bg-slate-200/50 hover:text-slate-900'}">${t.label}</button>
   `).join('');
-  
-  $('#panelHost').innerHTML = renderPanel(state.tab, p);
-  bindPanel();
+
+  try {
+    $('#panelHost').innerHTML = renderPanel(state.tab, p);
+    bindPanel();
+  } catch (e) {
+    console.error(e);
+    $('#panelHost').innerHTML = `<div class="p-6 bg-white rounded-2xl border border-rose-200 text-rose-700 shadow-sm"><h3 class="font-bold mb-2">Error loading tab</h3><p class="text-sm">${esc(e.message)}</p></div>`;
+  }
 }
 
-function switchTab(key) { state.tab = key; renderWorkspace(); }
-function openProject(id) { state.currentId = id; state.tab = 'overview'; state.searchQuery = ''; render(); }
-function goHome() { state.currentId = null; state.tab = 'overview'; state.searchQuery = ''; render(); }
+function switchTab(key) {
+  state.tab = key;
+  renderWorkspace();
+}
 
-function openNewProject() { $('#newProjName').value = ''; $('#modalNewProject').classList.remove('hidden'); setTimeout(() => $('#newProjName').focus(), 50); }
-function closeNewProject() { $('#modalNewProject').classList.add('hidden'); }
+function openProject(id) {
+  state.currentId = id;
+  state.tab = 'overview';
+  state.searchQuery = '';
+  render();
+}
+
+function goHome() {
+  state.currentId = null;
+  state.tab = 'overview';
+  state.searchQuery = '';
+  render();
+}
+
+function openNewProject() {
+  $('#newProjName').value = '';
+  $('#modalNewProject').classList.remove('hidden');
+  setTimeout(() => $('#newProjName').focus(), 50);
+}
+
+function closeNewProject() {
+  $('#modalNewProject').classList.add('hidden');
+}
+
 function confirmNewProject() {
   const name = ($('#newProjName').value || '').trim();
   if (!name) return toast('Please enter a project name.', 'warn');
   const p = { id: uid(), name, files: [], analysis: null, createdAt: Date.now(), updatedAt: Date.now() };
-  state.projects.unshift(p); saveProjects(); closeNewProject(); openProject(p.id); toast('Project created.', 'ok');
+  state.projects.unshift(p);
+  saveProjects();
+  closeNewProject();
+  openProject(p.id);
+  toast('Project created.', 'ok');
 }
+
 function deleteProject(e, id) {
   e.stopPropagation();
   if (!confirm('Delete this project and all its data?')) return;
   state.projects = state.projects.filter(p => p.id !== id);
   if (state.currentId === id) state.currentId = null;
-  saveProjects(); render(); toast('Project deleted.', 'ok');
+  saveProjects();
+  render();
+  toast('Project deleted.', 'ok');
 }
 
 function renderPanel(tab, p) {
@@ -355,6 +464,7 @@ function panelOverview(p) {
   const a = p.analysis;
   if (!a) return noAnalysis();
   const ov = a.project_overview || {};
+
   return `<div class="bg-white rounded-2xl border border-slate-200 p-6 md:p-8 shadow-sm">
     <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
       <div class="w-10 h-10 rounded-lg bg-brand-light text-brand flex items-center justify-center">
@@ -362,9 +472,10 @@ function panelOverview(p) {
       </div>
       <div>
         <h2 class="text-xl font-bold text-slate-900">Contract Executive Summary</h2>
-        <p class="text-xs text-slate-500">High-level project parameters extracted by AI</p>
+        <p class="text-xs text-slate-500">Key project information extracted from the uploaded documents</p>
       </div>
     </div>
+
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
       <div class="bg-slate-50 rounded-xl p-4 border border-slate-100">
         <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Project Name</div>
@@ -383,13 +494,11 @@ function panelOverview(p) {
         <div class="font-bold text-slate-800 text-lg">${fmtDate(ov.commencement_date)}</div>
       </div>
     </div>
+
     <div class="mt-8 bg-blue-50 rounded-xl p-5 border border-blue-100">
-      <h3 class="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">
-        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-        AI Analysis Note
-      </h3>
+      <h3 class="text-sm font-bold text-blue-900 mb-2 flex items-center gap-2">AI Analysis Note</h3>
       <p class="text-xs text-blue-800 leading-relaxed">
-        This summary is extracted directly from the uploaded files. If fields show "—", the 60-year HK QS AI could not find explicit references in the text. Please verify against the original documents using the Global Search bar above.
+        This summary is extracted from the uploaded files and may contain errors or omissions. If fields show "—", the information was not found in the extracted text. Please verify all results against the original documents. This tool is an aid and is not legal advice.
       </p>
     </div>
   </div>`;
@@ -401,132 +510,217 @@ function fileRow(f, aiDoc) {
   if (f.status === 'ocr') statusColor = 'text-blue-600';
   if (f.status === 'ready') statusColor = 'text-emerald-600';
   if (f.status === 'error') statusColor = 'text-rose-600';
+
   return `<div class="flex flex-col gap-2 p-3 rounded-xl border border-slate-200 bg-white shadow-sm">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-lg ${/\.pdf$/i.test(f.name) ? 'bg-rose-50 text-rose-600' : 'bg-blue-50 text-blue-600'} grid place-items-center text-[10px] font-bold shrink-0">${/\.pdf$/i.test(f.name) ? 'PDF' : 'TXT'}</div>
       <div class="min-w-0 flex-1">
-        <div class="font-medium text-slate-800 truncate">${esc(f.name)}</div>
-        <div class="text-xs ${statusColor}" data-file-status="${f.id}">${esc(f.progress || f.status)}</div>
+        <div class="text-sm font-semibold text-slate-800 truncate" title="${esc(f.name)}">${hl(f.name)}</div>
+        <div class="text-[11px] font-medium text-slate-400 mt-0.5">${fmtBytes(f.size)} · <span data-file-status="${esc(f.id)}" class="${statusColor}">${esc(f.progress || 'Ready')}</span></div>
       </div>
       <div class="flex items-center gap-1">
-        <button onclick="openManualText('${f.id}')" class="text-xs text-slate-500 hover:text-brand px-2 py-1 rounded hover:bg-slate-100">Edit</button>
-        <button onclick="removeFile('${f.id}')" class="text-slate-400 hover:text-rose-500 p-1">×</button>
+        <button onclick="openManualText('${esc(f.id)}')" class="text-xs text-slate-500 hover:text-brand px-2 py-1 rounded hover:bg-slate-100" title="View or edit extracted text">Edit text</button>
+        <button onclick="removeFile('${esc(f.id)}')" class="text-slate-400 hover:text-rose-500 p-1" title="Remove file">×</button>
       </div>
     </div>
+    ${f.status === 'error' ? `
+      <div class="mt-1 bg-amber-50 border border-amber-100 rounded-lg p-2 text-[11px] text-amber-800 flex items-center justify-between gap-2">
+        <span>No usable text was extracted.</span>
+        <button onclick="openManualText('${esc(f.id)}')" class="font-bold underline hover:text-amber-900 shrink-0">Paste text</button>
+      </div>
+    ` : ''}
+    ${aiDoc && aiDoc.summary ? `
+      <div class="mt-2 bg-slate-50/80 rounded-lg p-3 border border-slate-100">
+        <div class="text-[10px] font-bold text-brand mb-1">AI Reading Summary</div>
+        <p class="text-xs text-slate-600 leading-relaxed">${hl(aiDoc.summary)}</p>
+      </div>
+    ` : ''}
+  </div>`;
+}
+
+function docCard(d) {
+  const type = String(d.type || 'Other').toUpperCase();
+  return `<div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm hover:border-brand/30 transition">
+    <div class="flex items-center gap-2 mb-2">
+      <span class="text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 ${TYPE_COLORS[type] || TYPE_COLORS.Other}">${esc(type)}</span>
+      <span class="text-sm font-bold text-slate-800 break-all truncate" title="${esc(d.name)}">${hl(d.name)}</span>
+    </div>
+    <p class="text-xs text-slate-600 leading-relaxed">${hl(d.summary || 'No summary provided.')}</p>
   </div>`;
 }
 
 function panelDoc(p) {
   const files = p.files || [];
-  const aiDocs = p.analysis?.documents || [];
-  return `<div class="grid lg:grid-cols-2 gap-6">
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+  const analysis = p.analysis;
+  const aiDocs = analysis?.documents || [];
+  const sortedFiles = [...files];
+
+  if (state.fileSort === 'name_asc') sortedFiles.sort((a, b) => a.name.localeCompare(b.name));
+  else if (state.fileSort === 'size_desc') sortedFiles.sort((a, b) => (b.size || 0) - (a.size || 0));
+  else if (state.fileSort === 'date_desc') sortedFiles.reverse();
+
+  return `
+  <div class="grid lg:grid-cols-2 gap-6">
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-bold text-slate-800">1. Upload Documents</h2>
-        ${state.busy ? `<span class="text-xs font-medium text-brand animate-pulse">${esc(state.batchInfo || 'Processing...')}</span>` : ''}
+        <select onchange="state.fileSort = this.value; renderWorkspace();" class="text-xs border border-slate-200 rounded-lg px-2 py-1 outline-none focus:border-brand" aria-label="Sort files">
+          <option value="date_desc" ${state.fileSort === 'date_desc' ? 'selected' : ''}>Newest First</option>
+          <option value="date_asc" ${state.fileSort === 'date_asc' ? 'selected' : ''}>Oldest First</option>
+          <option value="name_asc" ${state.fileSort === 'name_asc' ? 'selected' : ''}>Name A-Z</option>
+          <option value="size_desc" ${state.fileSort === 'size_desc' ? 'selected' : ''}>Size Descending</option>
+        </select>
       </div>
-      <p class="text-xs text-slate-500 mb-4">PDFs are scanned locally. If a PDF is scanned/image-based, OCR will run automatically.</p>
-      <div id="dropzone" tabindex="0" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center cursor-pointer hover:border-brand hover:bg-brand-light/30 transition mb-4">
-        <div class="text-slate-400 mb-2">
-          <svg class="w-10 h-10 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+      <p class="text-xs text-slate-500 mb-4">PDFs are processed locally. Scanned or image-based PDF pages are sent through OCR in your browser.</p>
+
+      <div id="dropzone" tabindex="0" role="button" aria-label="Upload PDF or text files" class="border-2 border-dashed border-slate-300 rounded-2xl p-8 text-center cursor-pointer hover:border-brand hover:bg-brand-light/30 transition-all duration-200 outline-none focus:border-brand group flex flex-col items-center justify-center">
+        <div class="w-16 h-16 mb-4 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-white group-hover:scale-110 transition-transform">
+          <svg class="w-8 h-8 text-slate-400 group-hover:text-brand transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
         </div>
-        <p class="text-sm font-medium text-slate-600">Click to browse or drag & drop</p>
+        <p class="text-sm text-slate-600 font-medium"><span class="text-brand">Click to browse</span> or drag &amp; drop</p>
         <p class="text-xs text-slate-400 mt-1">PDF or TXT files supported</p>
-        <input id="fileInput" type="file" accept=".pdf,.txt,application/pdf,text/plain" multiple class="hidden">
+        <input id="fileInput" type="file" multiple accept=".pdf,.txt,application/pdf,text/plain" class="hidden">
       </div>
-      <div class="space-y-2 max-h-80 overflow-y-auto">
-        ${files.length ? files.map(f => fileRow(f, aiDocs.find(d => d.name === f.name))).join('') : '<p class="text-sm text-slate-400 text-center py-6">No files uploaded yet</p>'}
-      </div>
-      <div class="mt-5 flex gap-3">
-        <button onclick="analyzeProject()" ${state.busy || !files.some(f => f.status === 'ready') ? 'disabled' : ''} class="flex-1 bg-brand text-white font-bold py-3 rounded-xl hover:bg-brand-dark transition disabled:opacity-50 disabled:cursor-not-allowed">
-          ${state.busy ? 'Analyzing...' : 'Analyze with AI'}
-        </button>
+
+      <div class="mt-5 space-y-2 max-h-[400px] overflow-y-auto pr-1">
+        ${sortedFiles.length ? sortedFiles.map(f => {
+          const aiDoc = aiDocs.find(d => d.name === f.name || f.name.includes(d.name) || d.name.includes(f.name));
+          return fileRow(f, aiDoc);
+        }).join('') : '<p class="text-sm text-slate-400 text-center py-4">No documents uploaded yet.</p>'}
       </div>
     </div>
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-slate-800">2. AI Classification</h2>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col">
+      <div class="flex items-start justify-between gap-4 mb-5">
+        <div>
+          <h2 class="text-lg font-bold text-slate-800">2. AI Classification</h2>
+          <p class="text-xs text-slate-500 mt-1">Review extracted document classifications and summaries.</p>
+        </div>
+        <button id="analyzeBtn" onclick="analyzeProject()" ${state.busy ? 'disabled' : ''} class="shrink-0 text-sm font-bold px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-2 ${state.busy ? 'bg-slate-300 text-white cursor-not-allowed shadow-none' : 'bg-brand hover:bg-brand-dark text-white hover:shadow-lg hover:-translate-y-0.5'}">
+          ${state.busy ? '<div class="w-4 h-4 rounded-full loader border-2 border-white border-t-transparent"></div> Processing...' : 'Analyze with AI'}
+        </button>
       </div>
-      <p class="text-xs text-slate-500 mb-4">Extracts Contract Docs (GCC/SCC) and VO dates/amounts.</p>
-      <div class="space-y-3 max-h-[420px] overflow-y-auto">
-        ${aiDocs.length ? aiDocs.map(d => `
-          <div class="border border-slate-200 rounded-xl p-4">
-            <div class="flex items-center gap-2 mb-2">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${TYPE_COLORS[d.type] || TYPE_COLORS.Other}">${esc(d.type || 'Other')}</span>
-              <span class="font-medium text-slate-800 text-sm truncate">${esc(d.name)}</span>
-            </div>
-            <p class="text-xs text-slate-600 leading-relaxed">${hl(d.summary || '')}</p>
-          </div>
-        `).join('') : '<p class="text-sm text-slate-400 text-center py-10">Run AI analysis to classify documents</p>'}
+
+      ${state.busy && state.batchInfo ? `<div class="bg-blue-50 text-blue-800 text-xs p-3 rounded-lg mb-4 animate-pulse border border-blue-100 font-medium">${esc(state.batchInfo)}</div>` : ''}
+
+      <div class="flex-1 space-y-3 overflow-y-auto pr-1">
+        ${aiDocs.length ? aiDocs.map(docCard).join('') : analysis
+          ? '<p class="text-sm text-slate-400 text-center py-4">AI returned no document classifications.</p>'
+          : '<div class="h-full flex flex-col items-center justify-center text-slate-400 py-10"><p class="text-sm">Upload files and click Analyze to see results.</p></div>'}
       </div>
     </div>
   </div>`;
 }
 
 function panelDates(p) {
-  const a = p.analysis; if (!a) return noAnalysis();
+  const a = p.analysis;
+  if (!a) return noAnalysis();
   const dates = a.key_dates || [];
   const clauses = a.key_clauses || [];
+
   return `<div class="grid lg:grid-cols-2 gap-6">
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
       <h2 class="text-lg font-bold text-slate-800 mb-4">Key Dates</h2>
-      ${dates.length ? `<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="text-[11px] uppercase text-slate-500 border-b"><tr><th class="py-2 text-left">Date</th><th class="py-2 text-left">Event</th><th class="py-2 text-left">Source</th></tr></thead><tbody class="divide-y divide-slate-100">${dates.map(d => `<tr><td class="py-3 font-semibold text-brand whitespace-nowrap">${fmtDate(d.date)}</td><td class="py-3">${hl(d.event)}</td><td class="py-3 text-xs text-slate-500">${hl(d.source_file || '')}</td></tr>`).join('')}</tbody></table></div>` : emptyState('📅', 'No key dates found', 'The AI did not detect clear dates.')}
+      ${dates.length ? `<div class="overflow-x-auto rounded-xl border border-slate-100"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500"><tr><th class="py-3 px-4 font-bold">Date</th><th class="py-3 px-4 font-bold">Event &amp; Citation</th><th class="py-3 px-4 font-bold">Page</th></tr></thead><tbody class="divide-y divide-slate-100">${dates.map(d => `<tr><td class="py-3 px-4 font-bold text-brand whitespace-nowrap">${fmtDate(d.date)}</td><td class="py-3 px-4 text-slate-700 font-medium">${hl(d.event || '')}<div class="text-[10px] text-slate-400 mt-1">Source: ${hl(d.source_file || 'N/A')} — ${hl(d.title || 'N/A')}</div></td><td class="py-3 px-4 text-xs font-bold text-slate-500">${hl(d.page || '—')}</td></tr>`).join('')}</tbody></table></div>` : emptyState('📅', 'No key dates found', 'The AI did not detect any contractual dates.')}
     </div>
+
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
       <h2 class="text-lg font-bold text-slate-800 mb-4">Key Clauses</h2>
-      ${clauses.length ? `<div class="space-y-3 max-h-[500px] overflow-y-auto">${clauses.map(c => `<div class="border border-slate-200 rounded-xl p-4"><div class="font-bold text-sm text-brand mb-1">${hl(c.clause || c.title || 'Clause')}</div><p class="text-sm text-slate-700 mb-2">${hl(c.text)}</p><p class="text-xs text-slate-500"><span class="font-semibold">Impact:</span> ${hl(c.impact || '—')}</p></div>`).join('')}</div>` : emptyState('📜', 'No key clauses found', 'The AI did not detect any SCC alterations.')}
+      ${clauses.length ? `<div class="max-h-[600px] overflow-y-auto pr-2 space-y-3">${clauses.map(c => `<div class="border border-slate-200 rounded-xl p-4 bg-white shadow-sm"><div class="flex items-center gap-2 mb-2 flex-wrap"><span class="text-sm font-bold text-brand">${hl(c.clause || c.title || 'Clause')}</span><span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">Source: ${hl(c.source_file || 'N/A')} p.${hl(c.page || 'N/A')}</span></div><p class="text-sm text-slate-600">${hl(c.text || '')}</p>${c.impact ? `<div class="mt-3 text-xs text-amber-900 bg-amber-50 rounded-lg p-3"><span class="font-bold">Impact:</span> ${hl(c.impact)}</div>` : ''}</div>`).join('')}</div>` : emptyState('📝', 'No key clauses found', 'The AI did not detect any relevant clauses.')}
     </div>
   </div>`;
 }
 
 function sopStatus(vo, period) {
-  const issued = parseDate(vo.date_issued), submitted = parseDate(vo.date_submitted);
+  const issued = parseDate(vo.date_issued);
+  const submitted = parseDate(vo.date_submitted);
   if (!issued) return { label: 'Unknown', cls: 'slate', detail: 'Date issued missing' };
+
   const deadline = new Date(issued.getTime() + period * 86400000);
-  if (!submitted) return todayHK() > deadline.getTime() ? { label: 'Overdue', cls: 'rose', detail: `Deadline ${fmtDate(deadline)} passed` } : { label: 'Pending', cls: 'amber', detail: `Due ${fmtDate(deadline)}` };
+  if (!submitted) {
+    return todayHK() > deadline.getTime()
+      ? { label: 'Overdue', cls: 'rose', detail: `Deadline ${fmtDate(deadline)} passed` }
+      : { label: 'Pending', cls: 'amber', detail: `Due ${fmtDate(deadline)}` };
+  }
+
   const days = Math.round((submitted.getTime() - issued.getTime()) / 86400000);
   const ok = submitted.getTime() <= deadline.getTime();
   return { label: ok ? 'Compliant' : 'Overdue', cls: ok ? 'emerald' : 'rose', detail: `${days} days after issue (limit ${period}d)` };
 }
 
 function panelTimer(p) {
-  const a = p.analysis; if (!a) return noAnalysis();
+  const a = p.analysis;
+  if (!a) return noAnalysis();
   const vos = a.vo_details || [];
+
   return `<div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
     <div class="flex flex-wrap items-end justify-between gap-4 mb-6">
-      <div><h2 class="text-lg font-bold text-slate-800">VO &amp; SOP Timer</h2><p class="text-xs text-slate-500 mt-1">Verify against Cap. 652 response period.</p></div>
+      <div><h2 class="text-lg font-bold text-slate-800">VO &amp; SOP Timer</h2><p class="text-xs text-slate-500 mt-1">Indicative calculation only; check the applicable contract and legal requirements.</p></div>
       <div><label class="block text-[11px] font-bold text-slate-600 mb-1.5">Response period (days)</label><input id="sopPeriod" type="number" min="1" value="${state.sopPeriod}" class="w-28 px-3 py-2 border border-slate-300 rounded-xl text-sm font-semibold focus:ring-2 focus:ring-brand/30 focus:border-brand transition"></div>
     </div>
-    <div id="timerTable">${vos.length ? `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase text-slate-500"><tr><th class="py-3 px-4 font-bold">VO No.</th><th class="py-3 px-4 font-bold">Date Issued</th><th class="py-3 px-4 font-bold">Date Submitted</th><th class="py-3 px-4 font-bold">Source</th><th class="py-3 px-4 font-bold">Computation</th><th class="py-3 px-4 font-bold">SOP Status</th></tr></thead><tbody class="divide-y divide-slate-100">${vos.map(vo => { const st = sopStatus(vo, state.sopPeriod); return `<tr><td class="py-3 px-4 font-bold text-slate-800">${hl(vo.vo_number || '—')}</td><td class="py-3 px-4">${fmtDate(vo.date_issued)}</td><td class="py-3 px-4">${fmtDate(vo.date_submitted)}</td><td class="py-3 px-4 text-xs">${hl(vo.source_file || 'N/A')} p.${hl(vo.page || '—')}</td><td class="py-3 px-4 text-xs">${esc(st.detail)}</td><td class="py-3 px-4">${badge(st.label, st.cls)}</td></tr>`; }).join('')}</tbody></table></div>` : emptyState('⏱️', 'No VO records', 'Run AI analysis to populate.')}
-    </div>
+    <div id="timerTable">${renderTimerTable(vos, state.sopPeriod)}</div>
   </div>`;
 }
 
+function renderTimerTable(vos, period) {
+  if (!vos.length) return emptyState('⏱️', 'No VO records', 'Run AI analysis to populate this table.');
+
+  return `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase text-slate-500"><tr><th class="py-3 px-4 font-bold">VO No.</th><th class="py-3 px-4 font-bold">Date Issued</th><th class="py-3 px-4 font-bold">Date Submitted</th><th class="py-3 px-4 font-bold">Source</th><th class="py-3 px-4 font-bold">Computation</th><th class="py-3 px-4 font-bold">Indicative Status</th></tr></thead><tbody class="divide-y divide-slate-100">${vos.map(vo => {
+    const status = sopStatus(vo, period);
+    return `<tr><td class="py-3 px-4 font-bold text-slate-800">${hl(vo.vo_number || '—')}</td><td class="py-3 px-4">${fmtDate(vo.date_issued)}</td><td class="py-3 px-4">${fmtDate(vo.date_submitted)}</td><td class="py-3 px-4 text-xs">${hl(vo.source_file || 'N/A')} p.${hl(vo.page || '—')}</td><td class="py-3 px-4 text-xs">${esc(status.detail)}</td><td class="py-3 px-4">${badge(status.label, status.cls)}</td></tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+
 function updateTimerTable() {
-  const p = currentProject(); if (!p) return;
-  const period = parseInt($('#sopPeriod')?.value, 10) || 30; state.sopPeriod = period;
-  const vos = p.analysis?.vo_details || [];
-  const el = $('#timerTable'); if (!el) return;
-  el.innerHTML = vos.length ? `<div class="overflow-x-auto rounded-xl border border-slate-200"><table class="w-full text-sm text-left"><thead class="bg-slate-50 text-[11px] uppercase text-slate-500"><tr><th class="py-3 px-4 font-bold">VO No.</th><th class="py-3 px-4 font-bold">Date Issued</th><th class="py-3 px-4 font-bold">Date Submitted</th><th class="py-3 px-4 font-bold">Source</th><th class="py-3 px-4 font-bold">Computation</th><th class="py-3 px-4 font-bold">SOP Status</th></tr></thead><tbody class="divide-y divide-slate-100">${vos.map(vo => { const st = sopStatus(vo, period); return `<tr><td class="py-3 px-4 font-bold text-slate-800">${hl(vo.vo_number || '—')}</td><td class="py-3 px-4">${fmtDate(vo.date_issued)}</td><td class="py-3 px-4">${fmtDate(vo.date_submitted)}</td><td class="py-3 px-4 text-xs">${hl(vo.source_file || 'N/A')} p.${hl(vo.page || '—')}</td><td class="py-3 px-4 text-xs">${esc(st.detail)}</td><td class="py-3 px-4">${badge(st.label, st.cls)}</td></tr>`; }).join('')}</tbody></table></div>` : emptyState('⏱️', 'No VO records', 'Run AI analysis to populate.');
+  const p = currentProject();
+  const input = $('#sopPeriod');
+  const el = $('#timerTable');
+  if (!p || !input || !el) return;
+
+  const period = Math.max(1, parseInt(input.value, 10) || 30);
+  state.sopPeriod = period;
+  el.innerHTML = renderTimerTable(p.analysis?.vo_details || [], period);
 }
 
 function panelOrganizer(p) {
-  const a = p.analysis; if (!a) return noAnalysis();
+  const a = p.analysis;
+  if (!a) return noAnalysis();
   const vos = a.vo_details || [];
   if (!vos.length) return `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm">${emptyState('📑', 'No VOs found', 'The AI did not detect any Variation Orders.')}</div>`;
-  return `<div class="space-y-4">${vos.map((vo, i) => { const st = sopStatus(vo, state.sopPeriod); return `<details class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group"><summary class="flex items-center gap-4 p-5 cursor-pointer select-none hover:bg-slate-50 transition"><span class="chev text-slate-300 transition-transform text-xs group-hover:text-brand">▶</span><span class="font-bold text-base text-slate-800">${hl(vo.vo_number || ('VO ' + (i + 1)))}</span><span class="ml-auto text-base font-bold text-brand whitespace-nowrap">${hl(vo.amount || '—')}</span>${badge(st.label, st.cls)}</summary><div class="border-t border-slate-100 p-5 grid sm:grid-cols-4 gap-6 bg-slate-50/50 text-sm"><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Amount</div><div class="font-medium text-slate-800">${hl(vo.amount || '—')}</div></div><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Issued</div><div class="font-medium text-slate-800">${fmtDate(vo.date_issued)}</div></div><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Submitted</div><div class="font-medium text-slate-800">${fmtDate(vo.date_submitted)}</div></div><div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Source</div><div class="font-medium text-slate-800">${hl(vo.source_file || '—')} p.${hl(vo.page || '—')}</div></div></div></details>`; }).join('')}</div>`;
+
+  return `<div class="space-y-4">${vos.map((vo, i) => {
+    const status = sopStatus(vo, state.sopPeriod);
+    return `<details class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
+      <summary class="flex items-center gap-4 p-5 cursor-pointer select-none hover:bg-slate-50 transition">
+        <span class="chev text-slate-300 transition-transform text-xs group-hover:text-brand">▶</span>
+        <span class="font-bold text-base text-slate-800">${hl(vo.vo_number || ('VO ' + (i + 1)))}</span>
+        <span class="ml-auto text-base font-bold text-brand whitespace-nowrap">${hl(vo.amount || '—')}</span>
+        ${badge(status.label, status.cls)}
+      </summary>
+      <div class="border-t border-slate-100 p-5 grid sm:grid-cols-4 gap-6 bg-slate-50/50 text-sm">
+        <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Amount</div><div class="font-bold text-slate-800">${hl(vo.amount || '—')}</div></div>
+        <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Issued</div><div class="font-medium text-slate-800">${fmtDate(vo.date_issued)}</div></div>
+        <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Date Submitted</div><div class="font-medium text-slate-800">${fmtDate(vo.date_submitted)}</div></div>
+        <div><div class="text-[10px] font-bold uppercase text-slate-400 mb-1">Source</div><div class="font-medium text-slate-800">${hl(vo.source_file || '—')} p.${hl(vo.page || '—')}</div></div>
+      </div>
+    </details>`;
+  }).join('')}</div>`;
 }
 
 function panelCheck(p) {
-  const a = p.analysis; if (!a) return noAnalysis();
+  const a = p.analysis;
+  if (!a) return noAnalysis();
   const map = a.scc_gcc_mapping || [];
+
   return `<div class="grid lg:grid-cols-2 gap-6">
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
       <h2 class="text-lg font-bold text-slate-800 mb-4">SCC vs GCC Modifications</h2>
-      ${map.length ? `<div class="space-y-3 max-h-[600px] overflow-y-auto pr-2">${map.map(m => `<div class="border border-slate-200 rounded-xl p-4 flex gap-4 bg-white"><div class="flex flex-col gap-2 shrink-0 w-20"><div class="bg-brand-light/50 rounded p-2 text-center"><div class="text-[9px] font-bold text-slate-400">SCC</div><div class="text-sm font-bold text-brand">${hl(m.scc_ref || '—')}</div></div><div class="bg-slate-50 rounded p-2 text-center"><div class="text-[9px] font-bold text-slate-400">GCC</div><div class="text-sm font-bold text-slate-600">${hl(m.gcc_ref || '—')}</div></div></div><div class="flex-1"><p class="text-sm text-slate-700">${hl(m.change || '')}</p><p class="text-[10px] text-slate-400 mt-2">Source: ${hl(m.source_file || 'N/A')}</p></div></div>`).join('')}</div>` : emptyState('🔍', 'No modifications detected', 'The AI found no SCC overrides.')}
+      ${map.length ? `<div class="space-y-3 max-h-[600px] overflow-y-auto pr-2">${map.map(m => `<div class="border border-slate-200 rounded-xl p-4 flex gap-4 bg-white"><div class="flex flex-col gap-2 shrink-0 w-20"><div class="bg-brand-light/50 rounded p-2 text-center"><div class="text-[9px] font-bold text-slate-400">SCC</div><div class="text-sm font-bold text-brand">${hl(m.scc_ref || '—')}</div></div><div class="bg-slate-50 rounded p-2 text-center"><div class="text-[9px] font-bold text-slate-400">GCC</div><div class="text-sm font-bold text-slate-600">${hl(m.gcc_ref || '—')}</div></div></div><div class="flex-1"><p class="text-sm text-slate-700">${hl(m.change || '')}</p><p class="text-[10px] text-slate-400 mt-2">Source: ${hl(m.source_file || 'N/A')}</p></div></div>`).join('')}</div>` : emptyState('🔍', 'No modifications detected', 'The AI found no SCC overrides.') }
     </div>
+
     <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm h-fit">
       <h2 class="text-lg font-bold text-slate-800">Cap. 652 Timeline Calculator</h2>
+      <p class="text-xs text-slate-500 mt-1">Indicative only; confirm the applicable response period and deadline.</p>
       <div class="space-y-4 my-5">
         <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Payment claim date</label><input id="calcClaimDate" type="date" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 transition"></div>
         <div><label class="block text-xs font-bold text-slate-700 mb-1.5">Response period (days)</label><input id="calcPeriod" type="number" min="1" value="30" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand/30 transition"></div>
@@ -537,229 +731,407 @@ function panelCheck(p) {
 }
 
 function updateCalc() {
-  const cd = $('#calcClaimDate'), cp = $('#calcPeriod'), out = $('#calcOut'); if (!cd || !cp || !out) return;
-  const claim = parseDate(cd.value), days = parseInt(cp.value, 10);
-  if (!claim || !days || days <= 0) { out.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Enter a valid claim date.</p>'; return; }
-  const deadline = new Date(claim.getTime() + days * 86400000), today = todayHK();
-  const pct = Math.max(0, Math.min(100, ((today - claim.getTime()) / (deadline.getTime() - claim.getTime())) * 100));
-  const remaining = Math.round((deadline.getTime() - today) / 86400000), overdue = remaining < 0, near = !overdue && remaining <= 5;
-  out.innerHTML = `<div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/80 shadow-inner"><div class="flex flex-wrap gap-6 mb-6"><div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Claim Date</div><div class="font-bold text-slate-800">${fmtDate(cd.value)}</div></div><div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Deadline (+${days}d)</div><div class="font-bold text-brand">${fmtDate(deadline.toISOString().slice(0, 10))}</div></div><div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">${overdue ? 'Overdue by' : 'Days Remaining'}</div><div class="font-bold text-lg ${overdue ? 'text-rose-600' : near ? 'text-amber-600' : 'text-emerald-600'}">${Math.abs(remaining)} <span class="text-xs text-slate-500">days</span></div></div></div><div class="h-3 w-full bg-slate-200 rounded-full overflow-hidden"><div class="h-full ${overdue ? 'bg-rose-500' : near ? 'bg-amber-500' : 'bg-emerald-500'} rounded-full" style="width:${pct.toFixed(1)}%"></div></div><div class="flex justify-between text-[10px] font-bold text-slate-400 mt-2 uppercase"><span>Claim Start</span><span>Deadline</span></div></div>`;
+  const claimDateInput = $('#calcClaimDate');
+  const periodInput = $('#calcPeriod');
+  const output = $('#calcOut');
+  if (!claimDateInput || !periodInput || !output) return;
+
+  const claim = parseDate(claimDateInput.value);
+  const days = parseInt(periodInput.value, 10);
+  if (!claim || !days || days <= 0) {
+    output.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Enter a valid claim date and response period.</p>';
+    return;
+  }
+
+  const deadline = new Date(claim.getTime() + days * 86400000);
+  const today = todayHK();
+  const percentage = Math.max(0, Math.min(100, ((today - claim.getTime()) / (deadline.getTime() - claim.getTime())) * 100));
+  const remaining = Math.round((deadline.getTime() - today) / 86400000);
+  const overdue = remaining < 0;
+  const near = !overdue && remaining <= 5;
+
+  output.innerHTML = `<div class="rounded-2xl border border-slate-200 p-5 bg-slate-50/80 shadow-inner">
+    <div class="flex flex-wrap gap-6 mb-6">
+      <div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Claim Date</div><div class="font-bold text-slate-800">${fmtDate(claimDateInput.value)}</div></div>
+      <div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">Calculated Date (+${days}d)</div><div class="font-bold text-brand">${fmtDate(deadline.toISOString().slice(0, 10))}</div></div>
+      <div><div class="text-[10px] font-bold text-slate-400 uppercase mb-1">${overdue ? 'Overdue by' : 'Days Remaining'}</div><div class="font-bold text-lg ${overdue ? 'text-rose-600' : near ? 'text-amber-600' : 'text-emerald-600'}">${Math.abs(remaining)} <span class="text-xs text-slate-500">days</span></div></div>
+    </div>
+    <div class="h-3 w-full bg-slate-200 rounded-full overflow-hidden"><div class="h-full ${overdue ? 'bg-rose-500' : near ? 'bg-amber-500' : 'bg-emerald-500'} rounded-full" style="width:${percentage.toFixed(1)}%"></div></div>
+    <div class="flex justify-between text-[10px] font-bold text-slate-400 mt-2 uppercase"><span>Claim Start</span><span>Calculated Date</span></div>
+  </div>`;
 }
 
 function bindPanel() {
-  const dz = document.getElementById('dropzone'), fi = document.getElementById('fileInput');
-  if (dz && fi) {
-    dz.addEventListener('click', () => fi.click());
-    dz.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fi.click(); } });
-    ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('border-brand', 'bg-brand-light/50'); }));
-    ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('border-brand', 'bg-brand-light/50'); }));
-    dz.addEventListener('drop', e => { if (e.dataTransfer?.files?.length) handleFiles(e.dataTransfer.files); });
-    fi.addEventListener('change', e => { if (e.target.files?.length) handleFiles(e.target.files); });
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+
+  if (dropzone && fileInput) {
+    dropzone.addEventListener('click', () => fileInput.click());
+    dropzone.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+    ['dragenter', 'dragover'].forEach(eventName => dropzone.addEventListener(eventName, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.add('border-brand', 'bg-brand-light/50');
+    }));
+    ['dragleave', 'drop'].forEach(eventName => dropzone.addEventListener(eventName, e => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropzone.classList.remove('border-brand', 'bg-brand-light/50');
+    }));
+    dropzone.addEventListener('drop', e => {
+      if (e.dataTransfer?.files?.length) handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', e => {
+      if (e.target.files?.length) handleFiles(e.target.files);
+      e.target.value = '';
+    });
   }
-  const sp = document.getElementById('sopPeriod'); if (sp) sp.addEventListener('input', updateTimerTable);
-  const cd = document.getElementById('calcClaimDate');
-  if (cd) { if (!cd.value) cd.value = new Date().toISOString().slice(0, 10); cd.addEventListener('input', updateCalc); $('#calcPeriod')?.addEventListener('input', updateCalc); updateCalc(); }
+
+  const sopPeriod = document.getElementById('sopPeriod');
+  if (sopPeriod) sopPeriod.addEventListener('input', updateTimerTable);
+
+  const claimDate = document.getElementById('calcClaimDate');
+  if (claimDate) {
+    if (!claimDate.value) claimDate.value = new Date().toISOString().slice(0, 10);
+    claimDate.addEventListener('input', updateCalc);
+    $('#calcPeriod')?.addEventListener('input', updateCalc);
+    updateCalc();
+  }
 }
 
 function setFileStatus(id, text, cls) {
-  const el = document.querySelector(`[data-file-status="${id}"]`); if (!el) return;
-  el.textContent = text; if (cls) el.className = cls;
+  const el = document.querySelector(`[data-file-status="${id}"]`);
+  if (!el) return;
+  el.textContent = text;
+  if (cls) el.className = cls;
 }
 
 async function extractPdfText(file, onProgress) {
   if (typeof pdfjsLib === 'undefined') throw new Error('pdf.js failed to load');
+
   const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
-  let out = '';
+  let output = '';
+
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const content = await page.getTextContent();
-    let pageText = content.items.map(it => it.str).join(' ').trim();
+    let pageText = content.items.map(item => item.str).join(' ').trim();
+
     if (pageText.length < 20) {
       if (onProgress) onProgress(i, pdf.numPages, 'ocr', 0);
       const viewport = page.getViewport({ scale: 1.5 });
       const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.height = viewport.height; canvas.width = viewport.width;
-      await page.render({ canvasContext: ctx, viewport }).promise;
-      const result = await Tesseract.recognize(canvas, 'eng', { logger: m => { if (m.status === 'recognizing text' && onProgress) onProgress(i, pdf.numPages, 'ocr', Math.round(m.progress * 100)); } });
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Could not create a canvas for OCR.');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({ canvasContext: context, viewport }).promise;
+
+      const result = await Tesseract.recognize(canvas, 'eng', {
+        logger: message => {
+          if (message.status === 'recognizing text' && onProgress) {
+            onProgress(i, pdf.numPages, 'ocr', Math.round(message.progress * 100));
+          }
+        }
+      });
       pageText = result.data.text;
     }
-    out += `[Page ${i}] ${pageText}\n\n`;
+
+    output += `[Page ${i}] ${pageText}\n\n`;
   }
-  return out;
+
+  return output;
 }
 
 async function handleFiles(fileList) {
-  const p = currentProject(); if (!p) return;
-  const jobs = Array.from(fileList).map(file => { const rec = { id: uid(), name: file.name, size: file.size, text: '', status: 'reading', progress: 'Reading…' }; p.files.push(rec); return { file, rec }; });
+  const p = currentProject();
+  if (!p) return;
+
+  const jobs = Array.from(fileList).map(file => {
+    const record = {
+      id: uid(),
+      name: file.name,
+      size: file.size,
+      text: '',
+      status: 'reading',
+      progress: 'Reading…',
+      uploadedAt: Date.now()
+    };
+    p.files.push(record);
+    return { file, record };
+  });
+
   render();
-  for (const { file, rec } of jobs) {
+
+  for (const { file, record } of jobs) {
     try {
       let text = '';
+
       if (/\.pdf$/i.test(file.name) || file.type === 'application/pdf') {
-        text = await extractPdfText(file, (cur, total, mode, pct) => {
-          const msg = mode === 'ocr' ? `OCR: Page ${cur}/${total} (${pct}%)` : `Reading: Page ${cur}/${total}`;
-          setFileStatus(rec.id, msg, mode === 'ocr' ? 'text-blue-600 font-bold' : 'text-amber-600 font-bold');
+        text = await extractPdfText(file, (currentPage, totalPages, mode, percentage) => {
+          const message = mode === 'ocr'
+            ? `OCR: Page ${currentPage}/${totalPages} (${percentage}%)`
+            : `Reading: Page ${currentPage}/${totalPages}`;
+          setFileStatus(record.id, message, mode === 'ocr' ? 'text-blue-600 font-bold' : 'text-amber-600 font-bold');
         });
-      } else { 
-        text = await file.text(); 
-        text = `[Page 1] ${text}`;
+      } else {
+        text = `[Page 1] ${await file.text()}`;
       }
-      rec.text = (text || '').trim();
-      rec.status = rec.text.length > 10 ? 'ready' : 'error';
-      rec.progress = rec.text.length > 10 ? `${rec.text.length.toLocaleString()} chars` : 'No text extractable';
-    } catch (err) { rec.status = 'error'; rec.progress = err.message || 'Failed to read'; }
-    touch(p); saveProjects(); render();
+
+      record.text = (text || '').trim();
+      record.status = record.text.length > 10 ? 'ready' : 'error';
+      record.progress = record.text.length > 10
+        ? `${record.text.length.toLocaleString()} chars`
+        : 'No text extractable';
+    } catch (error) {
+      record.status = 'error';
+      record.progress = error.message || 'Failed to read';
+    }
+
+    touch(p);
+    saveProjects();
+    render();
   }
-  toast('Documents processed. Ready for chunked AI analysis.', 'ok');
+
+  toast('Documents processed. Ready for AI analysis.', 'ok');
 }
 
 function removeFile(id) {
-  const p = currentProject(); if (!p) return;
-  p.files = (p.files || []).filter(f => f.id !== id); touch(p); saveProjects(); render();
+  const p = currentProject();
+  if (!p) return;
+  p.files = (p.files || []).filter(file => file.id !== id);
+  touch(p);
+  saveProjects();
+  render();
 }
 
 function openManualText(fileId) {
   state.targetFileIdForManualText = fileId;
-  const p = currentProject(), f = p.files.find(x => x.id === fileId);
-  $('#manualTextArea').value = f && f.text ? f.text : '';
+  const p = currentProject();
+  const file = p?.files?.find(item => item.id === fileId);
+  $('#manualTextArea').value = file?.text || '';
   $('#modalManualText').classList.remove('hidden');
 }
-function closeManualText() { $('#modalManualText').classList.add('hidden'); state.targetFileIdForManualText = null; }
-function saveManualText() {
-  const p = currentProject(); if (!p || !state.targetFileIdForManualText) return;
-  const f = p.files.find(x => x.id === state.targetFileIdForManualText);
-  if (f) {
-    f.text = `[Page 1] ${$('#manualTextArea').value.trim()}`;
-    f.status = f.text.length > 10 ? 'ready' : 'error';
-    f.progress = f.text.length > 10 ? `${f.text.length.toLocaleString()} chars (manual)` : 'Empty';
-    touch(p); saveProjects(); closeManualText(); render();
-    toast('Text saved manually.', 'ok');
-  }
+
+function closeManualText() {
+  $('#modalManualText').classList.add('hidden');
+  state.targetFileIdForManualText = null;
 }
 
-const SYSTEM_PROMPT = `You are a 60-year veteran Quantity Surveyor (QS) in Hong Kong. You possess unparalleled expertise in HKIA/HKIS standard forms, GCC/SCC, Cap. 652 (Security of Payment Ordinance), VO valuation, and EOT claims.
-Your task is to analyze the provided document chunk strictly and accurately.
+function saveManualText() {
+  const p = currentProject();
+  if (!p || !state.targetFileIdForManualText) return;
+
+  const file = p.files.find(item => item.id === state.targetFileIdForManualText);
+  if (!file) return;
+
+  const manualText = $('#manualTextArea').value.trim();
+  file.text = manualText ? `[Page 1] ${manualText}` : '';
+  file.status = file.text.length > 10 ? 'ready' : 'error';
+  file.progress = file.text.length > 10
+    ? `${file.text.length.toLocaleString()} chars (manual)`
+    : 'Empty';
+
+  touch(p);
+  saveProjects();
+  closeManualText();
+  render();
+  toast('Text saved manually.', 'ok');
+}
+
+const SYSTEM_PROMPT = `You are a Hong Kong-focused quantity surveying AI assistant with knowledge of HKIA/HKIS standard forms, GCC/SCC, Cap. 652 (Security of Payment Ordinance), variation valuation, and extension of time claims.
+Analyze the provided document text carefully and accurately.
 
 CRITICAL RULES:
-1. NO HALLUCINATION: Only extract what is explicitly written in the text. If a field is missing, leave it as "" or [].
-2. CITATIONS REQUIRED: For every extracted item, you MUST provide the exact "source_file", the "page" number (look for [Page X] markers), and the "title" (e.g., Clause 15, VO 01).
-3. OUTPUT RAW JSON ONLY. No markdown formatting, no explanations.
-4. For VO / Architect's Instruction dates: Always prefer the date shown on the actual Architect's Instruction / VO document over any later assessment or valuation date.
+1. Do not invent facts. Extract only information explicitly stated in the supplied text. If a field is missing, use "" or [].
+2. Provide citations for each extracted item where applicable: exact source_file, page number from [Page X] markers, and a title or clause reference.
+3. Return raw JSON only. Do not include markdown or explanations.
+4. For VO or Architect's Instruction dates, prefer the date printed on the actual VO/AI document over any later assessment or valuation date.
+5. For amounts, preserve the currency exactly as written. Do not assume an amount is HKD unless the source explicitly identifies it as HKD or HK$.
 
 REQUIRED JSON SCHEMA:
 {
   "project_overview": {
     "project_name": "string",
-    "contract_sum": "string (e.g. HKD 1,200,000,000)",
+    "contract_sum": "string (preserve currency as written)",
     "duration": "string (e.g. 730 days)",
     "commencement_date": "YYYY-MM-DD"
   },
   "documents": [{"name": "string", "type": "GCC | SCC | VO | AI | Other", "summary": "string"}],
   "key_dates": [{"date": "YYYY-MM-DD", "event": "string", "source_file": "string", "page": "string", "title": "string"}],
   "key_clauses": [{"clause": "string", "text": "string", "impact": "string", "source_file": "string", "page": "string", "title": "string"}],
-  "vo_details": [{"vo_number": "string", "amount": "string", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
+  "vo_details": [{"vo_number": "string", "amount": "string (preserve currency as written)", "date_issued": "YYYY-MM-DD", "date_submitted": "YYYY-MM-DD", "status": "string", "sop_check": "Compliant | Overdue", "source_file": "string", "page": "string"}],
   "scc_gcc_mapping": [{"scc_ref": "string", "gcc_ref": "string", "change": "string", "source_file": "string"}]
 }`;
 
 function normalizeEndpoint(url) {
-  let u = (url || '').trim(); if (!u) throw new Error('API endpoint is empty');
-  u = u.replace(/\/+$/, '');
-  return /\/chat\/completions$/i.test(u) ? u : u + '/chat/completions';
+  let endpoint = (url || '').trim();
+  if (!endpoint) throw new Error('API endpoint is empty');
+  endpoint = endpoint.replace(/\/+$/, '');
+  return /\/chat\/completions$/i.test(endpoint) ? endpoint : endpoint + '/chat/completions';
 }
 
 async function callAPIRaw(endpoint, apiKey, model, messages, maxTokens) {
   const headers = { 'Content-Type': 'application/json' };
-  if (apiKey) headers['Authorization'] = 'Bearer ' + apiKey;
-  const body = { model: model || 'deepseek-chat', messages, temperature: 0.1, stream: false };
+  if (apiKey) headers.Authorization = 'Bearer ' + apiKey;
+
+  const body = {
+    model: model || 'deepseek-chat',
+    messages,
+    temperature: 0.1,
+    stream: false
+  };
   if (maxTokens) body.max_tokens = maxTokens;
-  let res;
-  try { res = await fetch(normalizeEndpoint(endpoint), { method: 'POST', headers, body: JSON.stringify(body) }); } 
-  catch (e) { throw new Error('Network / CORS error: ' + e.message); }
-  if (!res.ok) { let t = ''; try { t = await res.text(); } catch (e) {} throw new Error(`HTTP ${res.status} ${res.statusText}${t ? ' — ' + t.slice(0, 200) : ''}`); }
-  const data = await res.json();
+
+  let response;
+  try {
+    response = await fetch(normalizeEndpoint(endpoint), {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(body)
+    });
+  } catch (error) {
+    throw new Error('Network / CORS error: ' + error.message);
+  }
+
+  if (!response.ok) {
+    let text = '';
+    try { text = await response.text(); } catch (error) {}
+    throw new Error(`HTTP ${response.status} ${response.statusText}${text ? ' — ' + text.slice(0, 200) : ''}`);
+  }
+
+  const data = await response.json();
   const content = data?.choices?.[0]?.message?.content;
   if (typeof content !== 'string') throw new Error('Unexpected response shape');
   return content;
 }
 
 function parseAIJson(raw) {
-  let s = String(raw || '').trim().replace(/```json/gi, '').replace(/```/g, '').trim();
-  const a = s.indexOf('{'), b = s.lastIndexOf('}');
-  if (a === -1 || b === -1 || b <= a) throw new Error('No JSON object found in the response');
-  s = s.slice(a, b + 1);
-  try { return JSON.parse(s); } catch (e) { return JSON.parse(s.replace(/,\s*([}\]])/g, '$1')); }
+  let text = String(raw || '').trim().replace(/```json/gi, '').replace(/```/g, '').trim();
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+
+  if (start === -1 || end === -1 || end <= start) {
+    throw new Error('No JSON object found in the response');
+  }
+
+  text = text.slice(start, end + 1);
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    return JSON.parse(text.replace(/,\s*([}\]])/g, '$1'));
+  }
+}
+
+function mergeBy(items, incoming, keyFn) {
+  if (!Array.isArray(incoming)) return;
+  for (const item of incoming) {
+    if (!item || typeof item !== 'object') continue;
+    const key = keyFn(item);
+    if (!items.some(existing => keyFn(existing) === key)) items.push(item);
+  }
 }
 
 async function analyzeProject() {
-  const p = currentProject(); if (!p) return;
-  const ready = (p.files || []).filter(f => f.text && f.text.trim().length > 10);
-  if (!ready.length) { toast('Upload at least one document with extracted text first.', 'warn'); return; }
+  const p = currentProject();
+  if (!p) return;
+
+  const ready = (p.files || []).filter(file => file.text && file.text.trim().length > 10);
+  if (!ready.length) {
+    toast('Upload at least one document with extracted text first.', 'warn');
+    return;
+  }
   if (state.busy) return;
-  state.busy = true; renderWorkspace();
+
+  state.busy = true;
+  renderWorkspace();
+
   try {
-    const CHUNK_SIZE = 15000;
-    let allChunks = [];
-    ready.forEach(f => {
-      const text = f.text;
-      for (let i = 0; i < text.length; i += CHUNK_SIZE) {
-        allChunks.push({ text: text.slice(i, i + CHUNK_SIZE), sourceFile: f.name });
+    const chunkSize = 15000;
+    const chunks = [];
+
+    ready.forEach(file => {
+      for (let index = 0; index < file.text.length; index += chunkSize) {
+        chunks.push({
+          text: file.text.slice(index, index + chunkSize),
+          sourceFile: file.name
+        });
       }
     });
-    let finalResult = { project_overview: {}, documents: [], key_dates: [], key_clauses: [], vo_details: [], scc_gcc_mapping: [] };
-    for (let i = 0; i < allChunks.length; i++) {
-      const chunk = allChunks[i];
-      state.batchInfo = `Processing chunk ${i + 1} of ${allChunks.length} (File: ${chunk.sourceFile})...`;
+
+    const finalResult = {
+      project_overview: {},
+      documents: [],
+      key_dates: [],
+      key_clauses: [],
+      vo_details: [],
+      scc_gcc_mapping: []
+    };
+    const failedChunks = [];
+
+    for (let index = 0; index < chunks.length; index++) {
+      const chunk = chunks[index];
+      state.batchInfo = `Processing chunk ${index + 1} of ${chunks.length} (File: ${chunk.sourceFile})...`;
       renderWorkspace();
-      const prompt = `Here is a chunk of text from the file "${chunk.sourceFile}". Please analyze it and return the JSON data. Remember to use [Page X] markers for citations.\n\nTEXT:\n${chunk.text}`;
+
+      const prompt = `Here is a chunk of text from the file "${chunk.sourceFile}". Analyze it and return JSON matching the required schema. Use the [Page X] markers for citations.\n\nTEXT:\n${chunk.text}`;
+
       try {
         const raw = await callAPIRaw(state.settings.endpoint, state.settings.apiKey, state.settings.model, [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: prompt }
         ]);
-        const chunkJson = parseAIJson(raw);
-        if (chunkJson.project_overview) {
-          for (const [key, val] of Object.entries(chunkJson.project_overview)) {
-            if (val && !finalResult.project_overview[key]) finalResult.project_overview[key] = val;
+        const chunkResult = parseAIJson(raw);
+
+        if (chunkResult.project_overview && typeof chunkResult.project_overview === 'object') {
+          for (const [key, value] of Object.entries(chunkResult.project_overview)) {
+            if (value && !finalResult.project_overview[key]) finalResult.project_overview[key] = value;
           }
         }
-        if (chunkJson.documents) {
-          chunkJson.documents.forEach(d => {
-            if (!finalResult.documents.find(x => x.name === d.name)) finalResult.documents.push(d);
-          });
-        }
-        if (chunkJson.key_dates) {
-          chunkJson.key_dates.forEach(d => {
-            if (!finalResult.key_dates.find(x => x.date === d.date && x.event === d.event)) finalResult.key_dates.push(d);
-          });
-        }
-        if (chunkJson.key_clauses) {
-          chunkJson.key_clauses.forEach(c => {
-            if (!finalResult.key_clauses.find(x => x.clause === c.clause && x.text === c.text)) finalResult.key_clauses.push(c);
-          });
-        }
-        if (chunkJson.vo_details) {
-          chunkJson.vo_details.forEach(v => {
-            if (!finalResult.vo_details.find(x => x.vo_number === v.vo_number)) finalResult.vo_details.push(v);
-          });
-        }
-        if (chunkJson.scc_gcc_mapping) {
-          chunkJson.scc_gcc_mapping.forEach(m => {
-            if (!finalResult.scc_gcc_mapping.find(x => x.scc_ref === m.scc_ref && x.gcc_ref === m.gcc_ref)) finalResult.scc_gcc_mapping.push(m);
-          });
-        }
-      } catch (err) {
-        console.warn(`Failed to process chunk ${i+1}`, err);
+
+        mergeBy(finalResult.documents, chunkResult.documents, item => item.name || JSON.stringify(item));
+        mergeBy(finalResult.key_dates, chunkResult.key_dates, item => `${item.date || ''}|${item.event || ''}|${item.source_file || ''}|${item.page || ''}`);
+        mergeBy(finalResult.key_clauses, chunkResult.key_clauses, item => `${item.clause || ''}|${item.text || ''}|${item.source_file || ''}|${item.page || ''}`);
+        mergeBy(finalResult.vo_details, chunkResult.vo_details, item => {
+          const identity = item.vo_number || '';
+          return identity
+            ? `${identity}|${item.source_file || ''}`
+            : `${item.date_issued || ''}|${item.amount || ''}|${item.source_file || ''}|${item.page || ''}`;
+        });
+        mergeBy(finalResult.scc_gcc_mapping, chunkResult.scc_gcc_mapping, item => `${item.scc_ref || ''}|${item.gcc_ref || ''}|${item.source_file || ''}`);
+      } catch (error) {
+        console.warn(`Failed to process chunk ${index + 1}`, error);
+        failedChunks.push(index + 1);
       }
-      await new Promise(r => setTimeout(r, 500));
+
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
+
+    if (failedChunks.length === chunks.length) {
+      throw new Error('All chunks failed. Check your API settings and try again.');
+    }
+
     p.analysis = finalResult;
-    p.analyzedAt = Date.now(); touch(p); saveProjects();
-    toast('Analysis complete — all chunks processed.', 'ok');
-  } catch (e) {
-    toast('AI analysis failed: ' + e.message, 'error');
+    p.analyzedAt = Date.now();
+    touch(p);
+    saveProjects();
+
+    if (failedChunks.length) {
+      toast(`Analysis partially completed. ${failedChunks.length} of ${chunks.length} chunks failed; results may be incomplete.`, 'warn');
+    } else {
+      toast('Analysis complete. Please verify results against the source documents.', 'ok');
+    }
+  } catch (error) {
+    toast('AI analysis failed: ' + error.message, 'error');
   } finally {
-    state.busy = false; state.batchInfo = ''; renderWorkspace();
+    state.busy = false;
+    state.batchInfo = '';
+    renderWorkspace();
   }
 }
 
@@ -767,42 +1139,98 @@ function openSettings() {
   $('#setEndpoint').value = state.settings.endpoint || '';
   $('#setApiKey').value = state.settings.apiKey || '';
   $('#setModel').value = state.settings.model || 'deepseek-chat';
-  $('#testResult').textContent = ''; $('#testResult').className = 'text-xs mt-3 min-h-[1.25rem] font-medium';
+  $('#testResult').textContent = '';
+  $('#testResult').className = 'text-xs mt-3 min-h-[1.25rem] font-medium';
   $('#modalSettings').classList.remove('hidden');
 }
-function closeSettings() { $('#modalSettings').classList.add('hidden'); }
-function saveSettings() {
-  state.settings = { endpoint: ($('#setEndpoint').value || '').trim(), apiKey: ($('#setApiKey').value || '').trim(), model: ($('#setModel').value || '').trim() || 'deepseek-chat' };
-  try { localStorage.setItem(LS_SETTINGS, JSON.stringify(state.settings)); } catch (e) { toast('Could not save settings.', 'error'); return; }
-  closeSettings(); toast('API settings saved.', 'ok');
+
+function closeSettings() {
+  $('#modalSettings').classList.add('hidden');
 }
-async function testConnection() {
-  const tr = $('#testResult'), ep = ($('#setEndpoint').value || '').trim(), key = ($('#setApiKey').value || '').trim(), model = ($('#setModel').value || '').trim() || 'deepseek-chat';
-  if (!ep) { tr.className = 'text-xs mt-3 font-bold text-rose-600'; tr.textContent = 'Enter an endpoint URL.'; return; }
-  tr.className = 'text-xs mt-3 font-medium text-slate-500'; tr.textContent = 'Testing connection…';
+
+function saveSettings() {
+  const nextSettings = {
+    endpoint: ($('#setEndpoint').value || '').trim(),
+    apiKey: ($('#setApiKey').value || '').trim(),
+    model: ($('#setModel').value || '').trim() || 'deepseek-chat'
+  };
+
   try {
-    await callAPIRaw(ep, key, model, [{ role: 'user', content: 'Reply with exactly: OK' }], 16);
-    tr.className = 'text-xs mt-3 font-bold text-emerald-600'; tr.textContent = '✓ Connected successfully!';
-  } catch (e) { tr.className = 'text-xs mt-3 font-bold text-rose-600'; tr.textContent = '✗ ' + e.message; }
+    localStorage.setItem(LS_SETTINGS, JSON.stringify(nextSettings));
+    state.settings = nextSettings;
+  } catch (error) {
+    toast('Could not save settings.', 'error');
+    return;
+  }
+
+  closeSettings();
+  toast('API settings saved.', 'ok');
+}
+
+async function testConnection() {
+  const result = $('#testResult');
+  const endpoint = ($('#setEndpoint').value || '').trim();
+  const apiKey = ($('#setApiKey').value || '').trim();
+  const model = ($('#setModel').value || '').trim() || 'deepseek-chat';
+
+  if (!endpoint) {
+    result.className = 'text-xs mt-3 font-bold text-rose-600';
+    result.textContent = 'Enter an endpoint URL.';
+    return;
+  }
+
+  result.className = 'text-xs mt-3 font-medium text-slate-500';
+  result.textContent = 'Testing connection…';
+
+  try {
+    await callAPIRaw(endpoint, apiKey, model, [
+      { role: 'user', content: 'Reply with exactly: OK' }
+    ], 16);
+    result.className = 'text-xs mt-3 font-bold text-emerald-600';
+    result.textContent = '✓ Connected successfully!';
+  } catch (error) {
+    result.className = 'text-xs mt-3 font-bold text-rose-600';
+    result.textContent = '✗ ' + error.message;
+  }
 }
 
 (function init() {
   try {
-    if (typeof pdfjsLib !== 'undefined') pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    loadState(); render();
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { closeSettings(); closeNewProject(); closeManualText(); }
-      if (e.key === 'Enter') {
-        if (!$('#modalNewProject').classList.contains('hidden') && document.activeElement === $('#newProjName')) confirmNewProject();
-        if (!$('#modalSettings').classList.contains('hidden') && document.activeElement === $('#setEndpoint')) saveSettings();
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    loadState();
+    render();
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        closeSettings();
+        closeNewProject();
+        closeManualText();
+      }
+
+      if (event.key === 'Enter') {
+        if (!$('#modalNewProject').classList.contains('hidden') && document.activeElement === $('#newProjName')) {
+          confirmNewProject();
+        }
+        if (!$('#modalSettings').classList.contains('hidden') && document.activeElement === $('#setEndpoint')) {
+          saveSettings();
+        }
       }
     });
+
     ['modalSettings', 'modalNewProject', 'modalManualText'].forEach(id => {
-      const el = document.getElementById(id); if (el) el.addEventListener('click', e => { if (e.target === el) el.classList.add('hidden'); });
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('click', event => {
+          if (event.target === element) element.classList.add('hidden');
+        });
+      }
     });
-  } catch (e) {
-    console.error(e);
-    document.body.innerHTML = `<div class="p-10 text-center text-rose-600 font-bold">Initialization Error: ${e.message}. <button onclick="localStorage.clear(); location.reload();" class="underline text-brand">Reset App</button></div>`;
+  } catch (error) {
+    console.error(error);
+    document.body.innerHTML = `<div class="p-10 text-center text-rose-600 font-bold">Initialization Error: ${esc(error.message)}. <button onclick="localStorage.clear(); location.reload();" class="underline text-brand">Reset App</button></div>`;
   }
 })();
 </script>
